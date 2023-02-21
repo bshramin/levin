@@ -1,6 +1,6 @@
 # Levin
 
-## Running the simulation
+## Running Levin
 
 ### Using Docker
 

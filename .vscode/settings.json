@@ -1,0 +1,7 @@
+{
+  "cSpell.words": ["networkx"],
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true
+
+  // "python.formatting.autopep8Args": ["--indent-size=2", "--ignore E121"]
+}
