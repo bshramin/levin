@@ -4,6 +4,7 @@ from queue import Queue
 from threading import Thread
 from .consts import Status, NETWORK_CONFIG
 from .network import Network
+from .agent import Agent, generate_agents
 
 
 class Simulator:
@@ -15,10 +16,11 @@ class Simulator:
     status = Status.NOT_INITIALIZED
     stop_request = False
     network = None
+    agents = []
 
     def __init__(self, name, log_q, config_path="configs"):
         self.name = name
-        self.out_q = Queue(maxsize=1) # Non-blocking for 1 message
+        self.out_q = Queue(maxsize=1)  # Non-blocking for 1 message
         self.in_q = Queue(maxsize=1)
         self.log_q = log_q
         self.status = Status.WAITING
@@ -44,6 +46,7 @@ class Simulator:
 
         self.network = Network(self.name, self.log_q, self.config["network"])
         self.network.dump()
+        self.agents = generate_agents(self.name, self.log_q, self.config["agents"])
         # TODO: Implement the simulation logic here.
 
         self.log("Stopping the simulation.")

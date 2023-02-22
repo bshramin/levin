@@ -12,8 +12,8 @@ min_sats = 100 # Minimum amount of satoshies in each side of the channel
 max_sats = 100000 # Maximum amount of satoshies in each side of the channel
 
 [agents]
-delayBetweenTransactions = 1 # In seconds
-number_of_agents = 1 # They work concurrently
+num_of_agents = 5 # They work concurrently
+tx_delay = 1 # Delay between transactions for each agent in seconds
 
 [routing]
 algorithm = "BFS" # ["BFS"]
