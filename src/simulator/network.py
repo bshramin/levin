@@ -1,15 +1,18 @@
 import networkx as nx
-import random
+from random import Random
+from .consts import SEED
 
 
 class Network:
     name = ""
     log_q = None
     graph = None
+    rand = None
 
     def __init__(self, name, log_q, network_config):
         self.name = name
         self.log_q = log_q
+        self.rand = Random(network_config[SEED])
         self.graph = self.build_graph_from_config(network_config)
 
     def build_graph_from_config(self, nc):
@@ -31,20 +34,21 @@ class Network:
 
     def build_random_graph(self, nc):
         seed = nc["seed"]
-        random.seed(seed)
         n = nc["num_of_nodes"]
         m = nc["num_of_channels"]
         min_sats = nc["min_sats"]
         max_sats = nc["max_sats"]
-        graph = nx.gnm_random_graph(n, m, seed, directed=False)
+        i = 0
+        graph = nx.gnm_random_graph(n, m, seed + i, directed=False)
         while not nx.is_connected(graph) or nx.number_of_selfloops(graph) != 0:
-            graph = gnm_random_graph(n, m, seed, directed=False)
+            i += 1
+            graph = gnm_random_graph(n, m, seed + i, directed=False)
 
         edges = graph.edges()
         graph = nx.DiGraph()
         for edge in edges:
-            right_sats = random.randint(min_sats, max_sats)
-            left_sats = random.randint(min_sats, max_sats)
+            right_sats = self.rand.randint(min_sats, max_sats)
+            left_sats = self.rand.randint(min_sats, max_sats)
             graph.add_edge(edge[0], edge[1], weight=right_sats)
             graph.add_edge(edge[1], edge[0], weight=left_sats)
 
