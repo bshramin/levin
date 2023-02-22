@@ -1,7 +1,8 @@
+import toml
 from time import sleep
 from queue import Queue
 from threading import Thread
-import toml
+from .consts import Status
 
 
 class Simulator:
@@ -10,7 +11,7 @@ class Simulator:
     out_q = None
     in_q = None
     log_q = None
-    status = "not initialized"  # TODO: use enums
+    status = Status.NOT_INITIALIZED
     stop_request = False
 
     def __init__(self, name, log_q, config_path="configs"):
@@ -18,7 +19,7 @@ class Simulator:
         self.out_q = Queue()
         self.in_q = Queue()
         self.log_q = log_q
-        self.status2 = "not started"
+        self.status = Status.WAITING
         self.read_config(config_path)
 
     def read_config(self, config_path):
@@ -31,14 +32,14 @@ class Simulator:
         _ = Thread(target=self.commands).start()
 
     def run(self):
-        self.status = "running"
+        self.status = Status.RUNNING
         self.log("Starting the simulation.")
 
         while not self.stop_request:
             sleep(1)
             self.log("Hello from " + self.name)
 
-        self.status = "stopped"
+        self.status = Status.STOPPED
         self.log("Stopping the simulation.")
         self.out_q.put("stopped")
 

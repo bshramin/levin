@@ -1,7 +1,6 @@
 import sys
 from queue import Queue
-from simulator import Simulator
-from threading import Thread
+from simulator import Simulator, Status
 from logger import Logger
 
 
@@ -41,4 +40,4 @@ if __name__ == "__main__":
             for simulator in simulators:
                 simulators[simulator].in_q.put("status")
             for simulator in simulators:
-                print(simulator + ": " + simulators[simulator].out_q.get())
+                print(simulator + ": " + Status(simulators[simulator].out_q.get()).name)
