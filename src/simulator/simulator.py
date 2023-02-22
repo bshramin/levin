@@ -46,7 +46,10 @@ class Simulator:
 
         self.network = Network(self.name, self.log_q, self.config["network"])
         self.network.dump()
-        self.agents = generate_agents(self.name, self.log_q, self.config["agents"])
+        self.agents = generate_agents(
+            self.name, self.log_q, self.network, self.config["agents"]
+        )
+        
         # TODO: Implement the simulation logic here.
 
         self.log("Stopping the simulation.")
