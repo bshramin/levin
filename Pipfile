@@ -11,5 +11,4 @@ toml = "*"
 black = "*"
 
 [requires]
-python_version = "3.10"
-python_full_version = "3.10.6"
+python_version = "3"
