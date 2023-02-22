@@ -22,3 +22,6 @@ TX_AMOUNT_MAX = "tx_amount_max"
 ROUTING_CONFIG = "routing"
 ROUTING_ALGORITHM = "algorithm"
 
+
+class RoutingAlgorithms(Enum):
+    BFS = 1
