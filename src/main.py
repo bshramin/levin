@@ -21,7 +21,6 @@ if __name__ == "__main__":
     simulators = {}
     for name in names:
         simulator = Simulator(name, logger_q)
-        simulator.read_config()
         simulator.start()
         simulators[name] = simulator
 

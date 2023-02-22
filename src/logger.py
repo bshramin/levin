@@ -51,5 +51,6 @@ class Logger:
                 return
 
     def start(self):
+        # TODO: initiate more run threads here
         _ = Thread(target=self.run).start()
         _ = Thread(target=self.commands).start()

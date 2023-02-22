@@ -1,25 +1,30 @@
 from time import sleep
 from queue import Queue
 from threading import Thread
+import toml
 
 
 class Simulator:
     name = ""
+    config = {}
     out_q = None
     in_q = None
     log_q = None
     status = "not initialized"  # TODO: use enums
     stop_request = False
 
-    def __init__(self, name, log_q):
+    def __init__(self, name, log_q, config_path="configs"):
         self.name = name
         self.out_q = Queue()
         self.in_q = Queue()
         self.log_q = log_q
         self.status2 = "not started"
+        self.read_config(config_path)
 
-    def read_config(self):
-        self.log("Reading config: " + self.name + ".json")
+    def read_config(self, config_path):
+        full_path = config_path + "/" + self.name + ".toml"
+        self.log("Reading config: " + full_path)
+        self.config = toml.load(full_path)
 
     def start(self):
         _ = Thread(target=self.run).start()
@@ -27,14 +32,14 @@ class Simulator:
 
     def run(self):
         self.status = "running"
-        self.log("Starting simulation for config: " + self.name)
+        self.log("Starting the simulation.")
 
         while not self.stop_request:
             sleep(1)
             self.log("Hello from " + self.name)
 
         self.status = "stopped"
-        self.log("Stopping simulation for config: " + self.name)
+        self.log("Stopping the simulation.")
         self.out_q.put("stopped")
 
     def log(self, msg):
@@ -48,6 +53,3 @@ class Simulator:
                 return
             if command == "status":
                 self.out_q.put(self.status)
-
-    def status(self):
-        return self.status2

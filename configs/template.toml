@@ -1,0 +1,8 @@
+title = "Config Example"
+
+[topology]
+number_of_nodes = 3
+
+[transaction_agents]
+number_of_agents = 1         # They work concurrently
+delayBetweenTransactions = 1 # In seconds
