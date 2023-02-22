@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["consts", "networkx"],
+  "cSpell.words": ["consts", "networkx", "sats", "selfloops"],
   "python.formatting.provider": "black",
   "editor.formatOnSave": true
 }

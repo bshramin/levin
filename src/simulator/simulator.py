@@ -18,8 +18,8 @@ class Simulator:
 
     def __init__(self, name, log_q, config_path="configs"):
         self.name = name
-        self.out_q = Queue()
-        self.in_q = Queue()
+        self.out_q = Queue(maxsize=1) # Non-blocking for 1 message
+        self.in_q = Queue(maxsize=1)
         self.log_q = log_q
         self.status = Status.WAITING
         self.read_config(config_path)
@@ -31,7 +31,7 @@ class Simulator:
         self.log(
             "Config read: \n"
             + str(self.config)
-            + "\n********** end of config **********\n"
+            + "\n********** end of config dump **********"
         )
 
     def start(self):
@@ -42,14 +42,13 @@ class Simulator:
         self.status = Status.RUNNING
         self.log("Starting the simulation.")
 
-        while not self.stop_request:
-            sleep(1)
-            self.log("Hello from " + self.name)
-            self.network = Network(self.name, self.log_q, self.config[NETWORK_CONFIG])
-            # TODO: Implement the simulation logic here.
+        self.network = Network(self.name, self.log_q, self.config["network"])
+        self.network.dump()
+        # TODO: Implement the simulation logic here.
 
-        self.status = Status.STOPPED
         self.log("Stopping the simulation.")
+        self.status = Status.STOPPED
+        print("Simulator " + self.name + " stopped.")
         self.out_q.put("stopped")
 
     def log(self, msg):

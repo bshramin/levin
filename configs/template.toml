@@ -1,15 +1,15 @@
-title = "Config Example"
 
 [network] # A directed graph
 # All topologies will be strictly connected with no self-loops
 # ["random", "star", "complete"]
+# IDEA: add reading network topology from a file
 topology = "random"
-number_of_nodes = 3
-number_of_edges = 3
-minimum_degree = 1 # Minimum degree of each node, unrelatable for complete and star
-maximum_degree = 2
-minimum_weight = 1 # Minimum amount of satoshies in each side of the channel
-maximum_weight = 10 # Maximum amount of satoshies in each side of the channel
+# You can use an exact number to reproduce the psoudo random results
+seed = 1677085608
+num_of_nodes = 3
+num_of_channels = 3
+min_sats = 100 # Minimum amount of satoshies in each side of the channel
+max_sats = 100000 # Maximum amount of satoshies in each side of the channel
 
 [agents]
 delayBetweenTransactions = 1 # In seconds
