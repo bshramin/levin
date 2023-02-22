@@ -1,7 +1,7 @@
 import sys
 from queue import Queue
-from simulator import Simulator, Status
-from logger import Logger
+from time import sleep
+from simulator import Simulator, Status, Logger
 
 
 if __name__ == "__main__":
@@ -30,15 +30,16 @@ if __name__ == "__main__":
         command = input()
         if command == "e" or command == "exit":
             for simulator in simulators:
-                simulators[simulator].in_q.put("stop")
+                simulators[simulator].stop_request = True
             for simulator in simulators:
-                simulators[simulator].out_q.get()
-            logger.in_q.put("stop")
-            logger.out_q.get()
-            sys.exit(0)
+                while simulators[simulator].status != Status.STOPPED:
+                    sleep(0.1)
+            logger.stop_request = True
+            logger.log_q.put("exit")
+            while logger.status != Status.STOPPED:
+                sleep(0.1)
+            break
 
         if command == "l" or command == "list":
             for simulator in simulators:
-                simulators[simulator].in_q.put("status")
-            for simulator in simulators:
-                print(simulator + ": " + Status(simulators[simulator].out_q.get()).name)
+                print(simulator + ": " + simulators[simulator].status.name)
