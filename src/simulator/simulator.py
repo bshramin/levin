@@ -2,7 +2,8 @@ import toml
 from time import sleep
 from queue import Queue
 from threading import Thread
-from .consts import Status
+from .consts import Status, NETWORK_CONFIG
+from .network import Network
 
 
 class Simulator:
@@ -13,6 +14,7 @@ class Simulator:
     log_q = None
     status = Status.NOT_INITIALIZED
     stop_request = False
+    network = None
 
     def __init__(self, name, log_q, config_path="configs"):
         self.name = name
@@ -26,6 +28,11 @@ class Simulator:
         full_path = config_path + "/" + self.name + ".toml"
         self.log("Reading config: " + full_path)
         self.config = toml.load(full_path)
+        self.log(
+            "Config read: \n"
+            + str(self.config)
+            + "\n********** end of config **********\n"
+        )
 
     def start(self):
         _ = Thread(target=self.run).start()
@@ -38,6 +45,8 @@ class Simulator:
         while not self.stop_request:
             sleep(1)
             self.log("Hello from " + self.name)
+            self.network = Network(self.name, self.log_q, self.config[NETWORK_CONFIG])
+            # TODO: Implement the simulation logic here.
 
         self.status = Status.STOPPED
         self.log("Stopping the simulation.")

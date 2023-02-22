@@ -6,3 +6,6 @@ class Status(Enum):
     WAITING = 2
     RUNNING = 3
     STOPPED = 4
+
+
+NETWORK_CONFIG = "network"

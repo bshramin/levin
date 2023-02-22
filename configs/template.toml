@@ -1,8 +1,19 @@
 title = "Config Example"
 
-[topology]
+[network] # A directed graph
+# All topologies will be strictly connected with no self-loops
+# ["random", "star", "complete"]
+topology = "random"
 number_of_nodes = 3
+number_of_edges = 3
+minimum_degree = 1 # Minimum degree of each node, unrelatable for complete and star
+maximum_degree = 2
+minimum_weight = 1 # Minimum amount of satoshies in each side of the channel
+maximum_weight = 10 # Maximum amount of satoshies in each side of the channel
 
-[transaction_agents]
-number_of_agents = 1         # They work concurrently
+[agents]
 delayBetweenTransactions = 1 # In seconds
+number_of_agents = 1 # They work concurrently
+
+[routing]
+algorithm = "BFS" # ["BFS"]

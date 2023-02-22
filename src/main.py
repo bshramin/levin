@@ -12,7 +12,8 @@ if __name__ == "__main__":
     names = sys.argv[1:]
 
     # Logging
-    logger_q = Queue()
+    # IDEA: To improve performance each simulator can have it's own logger.
+    logger_q = Queue(maxsize=1000)
     logger = Logger(logger_q, names)
     logger.start()
 
