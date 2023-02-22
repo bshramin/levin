@@ -26,9 +26,9 @@ if __name__ == "__main__":
 
     # User Commands
     while True:
-        print("Enter command(exit-list):")
+        print("Enter command (e)xit,(l)ist:")
         command = input()
-        if command == "exit":
+        if command == "e" or command == "exit":
             for simulator in simulators:
                 simulators[simulator].in_q.put("stop")
             for simulator in simulators:
@@ -37,7 +37,7 @@ if __name__ == "__main__":
             logger.out_q.get()
             sys.exit(0)
 
-        if command == "list":
+        if command == "l" or command == "list":
             for simulator in simulators:
                 simulators[simulator].in_q.put("status")
             for simulator in simulators:
