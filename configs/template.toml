@@ -12,10 +12,8 @@ sats_max = 100000 # Maximum amount of satoshies in each side of the channel
 
 [agents]
 seed = 1677085608
-num_of_agents = 5 # They work concurrently
+num_of_agents = 1 # They work concurrently
 tx_delay = 1 # Delay between transactions for each agent in seconds
 tx_amount_min = 1
 tx_amount_max = 10
-
-[routing]
-algorithm = "BFS" # ["BFS"]
+routing_algorithm = "shortest_path" # ["BFS"]

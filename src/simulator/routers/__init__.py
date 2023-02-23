@@ -1,2 +1,2 @@
 from .router import Router
-from .bfs import BFSRouter
+from .shortest import ShortestPathRouter

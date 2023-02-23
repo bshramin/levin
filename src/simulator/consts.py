@@ -20,8 +20,8 @@ TX_AMOUNT_MIN = "tx_amount_min"
 TX_AMOUNT_MAX = "tx_amount_max"
 
 ROUTING_CONFIG = "routing"
-ROUTING_ALGORITHM = "algorithm"
+ROUTING_ALGORITHM = "routing_algorithm"
 
 
 class RoutingAlgorithms(Enum):
-    BFS = 1
+    SHORTEST_PATH = "shortest_path"

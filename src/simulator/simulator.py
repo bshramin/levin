@@ -38,9 +38,7 @@ class Simulator:
 
         self.log("Generating " + str(n) + " agents.")
         for i in range(n):
-            self.agents.append(
-                Agent(self.name, str(i), self.log_q, self.network, config)
-            )
+            self.agents.append(Agent(self.name, i, self.log_q, self.network, config))
 
     def start_agents(self):
         for agent in self.agents:
