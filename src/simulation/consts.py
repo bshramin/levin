@@ -22,7 +22,7 @@ SEED = "seed"
 
 AGENT_CONFIG = "agents"
 NUM_OF_AGENTS = "num_of_agents"
-TX_DELAY = "tx_delay"
+TX_REST = "tx_rest"
 TX_AMOUNT_MIN = "tx_amount_min"
 TX_AMOUNT_MAX = "tx_amount_max"
 

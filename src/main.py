@@ -1,7 +1,7 @@
 import sys
 from queue import Queue
 from time import sleep
-from simulation import Simulator, Status, Logger, StatCollector
+from simulation import Simulator, Status
 
 
 if __name__ == "__main__":

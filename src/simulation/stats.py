@@ -10,7 +10,7 @@ class StatCollector:
     stat_q = None
     stop_request = False
     status = Status.NOT_INITIALIZED
-    stat_data = {}
+    stat_data = None
 
     def __init__(
         self,
@@ -53,6 +53,7 @@ class StatCollector:
         f.close()
 
     def initialize_data(self):
+        self.stat_data = {}
         self.stat_data[StatType.RTT_COUNT.value] = 0
         self.stat_data[StatType.TX_SUCCESS_COUNT.value] = 0
         self.stat_data[StatType.TX_TRY_COUNT.value] = 0

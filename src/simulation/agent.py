@@ -2,7 +2,7 @@ from threading import Thread
 from time import sleep
 from .consts import (
     Status,
-    TX_DELAY,
+    TX_REST,
     SEED,
     TX_AMOUNT_MAX,
     TX_AMOUNT_MIN,
@@ -84,7 +84,7 @@ class Agent:
         self.log("started")
         self.status = Status.RUNNING
         while True:
-            sleep(self.config[TX_DELAY])
+            sleep(self.config[TX_REST])
             self.send_transaction()
             if self.stop_request:
                 self.log("stopped")
