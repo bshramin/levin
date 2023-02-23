@@ -25,3 +25,4 @@ ROUTING_ALGORITHM = "routing_algorithm"
 
 class RoutingAlgorithms(Enum):
     SHORTEST_PATH = "shortest_path"
+    TRANSPARENT = "transparent"

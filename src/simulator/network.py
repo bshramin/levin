@@ -16,6 +16,11 @@ class Network:
         self.rand = Random(network_config[SEED])
         self.graph = self.build_graph_from_config(network_config)
 
+    def query_channel(self, src, dst):
+        edge = self.graph.get_edge_data(src, dst)
+        # TODO: simulate query delay 1 RTT
+        return edge["available_sats"]
+
     def execute_transaction(self, route, amount):
         # TODO: simulate transaction delay, about 4 RTTs for each hop
         for i in range(len(route) - 1):

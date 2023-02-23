@@ -10,7 +10,7 @@ from .consts import (
     RoutingAlgorithms,
 )
 from random import Random
-from .routers import ShortestPathRouter
+from .routers import ShortestPathRouter, TransparentRouter
 
 
 class Agent:
@@ -37,6 +37,8 @@ class Agent:
     def set_router(self, config):
         if config[ROUTING_ALGORITHM] == RoutingAlgorithms.SHORTEST_PATH.value:
             self.router = ShortestPathRouter()
+        elif config[ROUTING_ALGORITHM] == RoutingAlgorithms.TRANSPARENT.value:
+            self.router = TransparentRouter()
 
     def send_transaction(self):
         src, dst = self.choose_src_and_dst()
@@ -45,18 +47,19 @@ class Agent:
             f"sending transaction from {str(src)} to {str(dst)} amount: {str(amount)}"
         )
         try:
-            network_graph_copy = self.network.graph.copy()
-            route = self.router.find_route(network_graph_copy, src, dst)
+            route = self.router.find_route(self.network, src, dst, amount)
             is_success = False
+            error_edges = []
 
             while not is_success:
                 is_success, error_edge = self.network.execute_transaction(route, amount)
                 if is_success:
                     self.log("transaction succeeded")
                     break
-
-                network_graph_copy.remove_edge(error_edge[0], error_edge[1])
-                route = self.router.find_route(network_graph_copy, src, dst)
+                error_edges.append(error_edge)
+                route = self.router.find_route(
+                    self.network, src, dst, amount, error_edges
+                )
         except Exception as e:
             self.log(f"transaction failed {e}")
 
