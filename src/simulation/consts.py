@@ -8,6 +8,13 @@ class Status(Enum):
     STOPPED = 4
 
 
+class StatType(Enum):
+    RTT_COUNT = "rtt_count"
+    TX_SUCCESS_COUNT = "tx_success_count"
+    TX_TRY_COUNT = "tx_try_count"
+    TX_FAIL_COUNT = "tx_fail_count"
+
+
 # Config keys
 
 NETWORK_CONFIG = "network"

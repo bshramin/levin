@@ -6,23 +6,25 @@ from .consts import SEED
 
 class Network:
     name = ""
-    log_q = None
+    l = None  # Logger
+    sc = None  # StatCollector
     graph = None
     rand = None
 
-    def __init__(self, name, log_q, network_config):
+    def __init__(self, name, logger, stat_collector, network_config):
         self.name = name
-        self.log_q = log_q
+        self.l = logger
+        self.sc = stat_collector
         self.rand = Random(network_config[SEED])
         self.graph = self.build_graph_from_config(network_config)
 
     def query_channel(self, src, dst):
+        self.sc.record_rtt(1)
         edge = self.graph.get_edge_data(src, dst)
-        # TODO: simulate query delay 1 RTT
         return edge["available_sats"]
 
     def execute_transaction(self, route, amount):
-        # TODO: simulate transaction delay, about 4 RTTs for each hop
+        self.sc.record_rtt(4)
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
             if edge["available_sats"] < amount:
@@ -104,9 +106,6 @@ class Network:
         return graph
 
     def dump(self):
-        self.log("Dumping the network:")
-        self.log("Nodes: " + str(self.graph.nodes()))
-        self.log("Edges: " + str(self.graph.edges(data=True)))
-
-    def log(self, msg):
-        self.log_q.put({"task": self.name, "message": msg})
+        self.l.log("Dumping the network:")
+        self.l.log("Nodes: " + str(self.graph.nodes()))
+        self.l.log("Edges: " + str(self.graph.edges(data=True)))

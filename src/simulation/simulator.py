@@ -1,32 +1,35 @@
 import toml
 from time import sleep
-from queue import Queue
 from threading import Thread
-from .consts import Status, NETWORK_CONFIG
+from .consts import Status
 from .network import Network
 from .agent import Agent
+from .logger import Logger
+from .stats import StatCollector
 
 
 class Simulator:
     name = ""
+    l = None  # Logger
+    sc = None  # StatCollector
     config = {}
-    log_q = None
     status = Status.NOT_INITIALIZED
     stop_request = False
     network = None
     agents = []
 
-    def __init__(self, name, log_q, config_path="configs"):
+    def __init__(self, name):
         self.name = name
-        self.log_q = log_q
+        self.l = Logger(name)
+        self.sc = StatCollector(name)
+        self.read_config()
         self.status = Status.WAITING
-        self.read_config(config_path)
 
-    def read_config(self, config_path):
-        full_path = config_path + "/" + self.name + ".toml"
-        self.log("Reading config: " + full_path)
+    def read_config(self):
+        full_path = "configs/" + self.name + ".toml"
+        self.l.log("Reading config: " + full_path)
         self.config = toml.load(full_path)
-        self.log(
+        self.l.log(
             "Config read: \n"
             + str(self.config)
             + "\n********** end of config dump **********"
@@ -36,9 +39,9 @@ class Simulator:
         config = self.config["agents"]
         n = config["num_of_agents"]
 
-        self.log("Generating " + str(n) + " agents.")
+        self.l.log("Generating " + str(n) + " agents.")
         for i in range(n):
-            self.agents.append(Agent(self.name, i, self.log_q, self.network, config))
+            self.agents.append(Agent(self.name, i, self.l, self.network, config))
 
     def start_agents(self):
         for agent in self.agents:
@@ -52,11 +55,21 @@ class Simulator:
             while agent.status != Status.STOPPED:
                 sleep(0.1)
 
+    def stop_logger_and_stat_collector(self):
+        self.l.stop_request = True
+        self.sc.stop_request = True
+
+        self.l.log_q.put("exit")
+        self.sc.stat_q.put("exit")
+
+        while self.l.status != Status.STOPPED or self.sc.status != Status.STOPPED:
+            sleep(0.1)
+
     def run(self):
         self.status = Status.RUNNING
-        self.log("Starting the simulation.")
+        self.l.log("Starting the simulation.")
 
-        self.network = Network(self.name, self.log_q, self.config["network"])
+        self.network = Network(self.name, self.l, self.sc, self.config["network"])
         self.network.dump()
         self.generate_agents()
         self.start_agents()
@@ -65,13 +78,11 @@ class Simulator:
             sleep(0.5)
 
         self.stop_agents()
-        self.log("Stopping the simulation.")
+        self.stop_logger_and_stat_collector()
+        self.l.log("Stopping the simulation.")
         print("Simulator " + self.name + " stopped.")
         self.status = Status.STOPPED
 
     def start(self):
         thread = Thread(target=self.run)
         thread.start()
-
-    def log(self, msg):
-        self.log_q.put({"task": self.name, "message": msg})

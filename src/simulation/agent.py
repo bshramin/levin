@@ -16,7 +16,7 @@ from .routers import ShortestPathRouter, TransparentRouter
 class Agent:
     task_name = ""
     id = ""
-    log_q = None
+    l = None  # Logger
     config = {}
     network = None
     stop_request = False
@@ -24,10 +24,10 @@ class Agent:
     rand = None
     router = None
 
-    def __init__(self, task_name, id, log_q, network, config):
+    def __init__(self, task_name, id, logger, network, config):
         self.task_name = task_name
         self.id = id
-        self.log_q = log_q
+        self.l = logger
         self.config = config
         self.network = network
         self.rand = Random(config[SEED] + id)
@@ -89,4 +89,4 @@ class Agent:
         thread.start()
 
     def log(self, msg):
-        self.log_q.put({"task": self.task_name, "message": f"Agent {self.id}: {msg}"})
+        self.l.log(f"Agent {self.id}: ${msg}")
