@@ -17,6 +17,7 @@ class Agent:
     task_name = ""
     id = ""
     l = None  # Logger
+    sc = None  # Stats collector
     config = {}
     network = None
     stop_request = False
@@ -24,10 +25,11 @@ class Agent:
     rand = None
     router = None
 
-    def __init__(self, task_name, id, logger, network, config):
+    def __init__(self, task_name, id, logger, stats_collector, network, config):
         self.task_name = task_name
         self.id = id
         self.l = logger
+        self.sc = stats_collector
         self.config = config
         self.network = network
         self.rand = Random(config[SEED] + id)
@@ -47,20 +49,25 @@ class Agent:
             f"sending transaction from {str(src)} to {str(dst)} amount: {str(amount)}"
         )
         try:
-            route = self.router.find_route(self.network, src, dst, amount)
             is_success = False
             error_edges = []
-
             while not is_success:
-                is_success, error_edge = self.network.execute_transaction(route, amount)
-                if is_success:
-                    self.log("transaction succeeded")
-                    break
-                error_edges.append(error_edge)
                 route = self.router.find_route(
                     self.network, src, dst, amount, error_edges
                 )
+                if len(route) == 0:
+                    self.log("transaction failed - no route")
+                    self.sc.record_tx_fail()
+                    break
+                self.sc.record_tx_try()
+                is_success, error_edge = self.network.execute_transaction(route, amount)
+                if is_success:
+                    self.sc.record_tx_success()
+                    self.log("transaction succeeded")
+                    break
+                error_edges.append(error_edge)
         except Exception as e:
+            self.sc.record_tx_fail()
             self.log(f"transaction failed {e}")
 
     def choose_src_and_dst(self):

@@ -12,7 +12,7 @@ class StatType(Enum):
     RTT_COUNT = "rtt_count"
     TX_SUCCESS_COUNT = "tx_success_count"
     TX_TRY_COUNT = "tx_try_count"
-    TX_FAIL_COUNT = "tx_fail_count"
+    TX_NO_ROUTE = "tx_no_route"
 
 
 # Config keys

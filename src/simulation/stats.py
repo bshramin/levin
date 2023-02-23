@@ -34,7 +34,7 @@ class StatCollector:
                     StatType.RTT_COUNT,
                     StatType.TX_SUCCESS_COUNT,
                     StatType.TX_TRY_COUNT,
-                    StatType.TX_FAIL_COUNT,
+                    StatType.TX_NO_ROUTE,
                 ]:
                     self.stat_data[type.value] += value
 
@@ -56,7 +56,7 @@ class StatCollector:
         self.stat_data[StatType.RTT_COUNT.value] = 0
         self.stat_data[StatType.TX_SUCCESS_COUNT.value] = 0
         self.stat_data[StatType.TX_TRY_COUNT.value] = 0
-        self.stat_data[StatType.TX_FAIL_COUNT.value] = 0
+        self.stat_data[StatType.TX_NO_ROUTE.value] = 0
 
     def start(self):
         thread = Thread(target=self.run)
@@ -66,11 +66,11 @@ class StatCollector:
     def record_rtt(self, count):
         self.stat_q.put({"value": count, "type": StatType.RTT_COUNT})
 
-    def record_tx_try(self, count):
-        self.stat_q.put({"value": count, "type": StatType.TX_TRY_COUNT})
+    def record_tx_try(self):
+        self.stat_q.put({"value": 1, "type": StatType.TX_TRY_COUNT})
 
-    def record_tx_success(self, count):
-        self.stat_q.put({"value": count, "type": StatType.TX_SUCCESS_COUNT})
+    def record_tx_success(self):
+        self.stat_q.put({"value": 1, "type": StatType.TX_SUCCESS_COUNT})
 
-    def record_tx_fail(self, count):
-        self.stat_q.put({"value": count, "type": StatType.TX_FAIL_COUNT})
+    def record_tx_fail(self):
+        self.stat_q.put({"value": 1, "type": StatType.TX_NO_ROUTE})
