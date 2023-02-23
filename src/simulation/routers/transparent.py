@@ -10,14 +10,15 @@ class TransparentRouter(Router):
 
     def find_route(self, network, src, dst, amount, failed_edges=[]):
         graph = network.graph.copy()
-        route = []
-        while len(route) == 0:
+        while True:
             route = nx.shortest_path(graph, src, dst)
+            if len(route) == 0:
+                return []
             for i in range(len(route) - 1):
-                result = network.query_channel(route[i], route[i + 1])
-                if result["available_sats"] < amount:
+                edge = network.query_channel(route[i], route[i + 1])
+                if edge["available_sats"] < amount:
                     graph.remove_edge(route[i], route[i + 1])
                     route = []
-                    continue
-
-        return route
+                    break
+            if len(route) > 0:
+                return route

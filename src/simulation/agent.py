@@ -7,6 +7,7 @@ from .consts import (
     TX_AMOUNT_MAX,
     TX_AMOUNT_MIN,
     ROUTING_ALGORITHM,
+    NUM_OF_TRANSACTIONS,
     RoutingAlgorithms,
 )
 from random import Random
@@ -14,18 +15,8 @@ from .routers import ShortestPathRouter, TransparentRouter
 
 
 class Agent:
-    task_name = ""
-    id = ""
-    l = None  # Logger
-    sc = None  # Stats collector
-    config = {}
-    network = None
-    stop_request = False
-    status = Status.NOT_INITIALIZED
-    rand = None
-    router = None
-
     def __init__(self, task_name, id, logger, stats_collector, network, config):
+        self.stop_request = False
         self.task_name = task_name
         self.id = id
         self.l = logger
@@ -33,7 +24,9 @@ class Agent:
         self.config = config
         self.network = network
         self.rand = Random(config[SEED] + id)
+        self.stop_request = False
         self.status = Status.WAITING
+        self.total_transactions = 0
         self.set_router(config)
 
     def set_router(self, config):
@@ -57,7 +50,7 @@ class Agent:
                 )
                 if len(route) == 0:
                     self.log("transaction failed - no route")
-                    self.sc.record_tx_fail()
+                    self.sc.record_tx_no_route()
                     break
                 self.sc.record_tx_try()
                 is_success, error_edge = self.network.execute_transaction(route, amount)
@@ -67,7 +60,7 @@ class Agent:
                     break
                 error_edges.append(error_edge)
         except Exception as e:
-            self.sc.record_tx_fail()
+            self.sc.record_tx_no_route()
             self.log(f"transaction failed {e}")
 
     def choose_src_and_dst(self):
@@ -83,13 +76,14 @@ class Agent:
     def run(self):
         self.log("started")
         self.status = Status.RUNNING
-        while True:
+        while self.total_transactions < self.config[NUM_OF_TRANSACTIONS]:
             sleep(self.config[TX_REST])
             self.send_transaction()
+            self.total_transactions += 1
             if self.stop_request:
-                self.log("stopped")
-                self.status = Status.STOPPED
                 break
+        self.log("stopped")
+        self.status = Status.STOPPED
 
     def start(self):
         thread = Thread(target=self.run)

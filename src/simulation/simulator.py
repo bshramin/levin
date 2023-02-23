@@ -1,7 +1,7 @@
 import toml
 from time import sleep
 from threading import Thread
-from .consts import Status
+from .consts import Status, LOGGING_CONFIG, AGENT_CONFIG, NUM_OF_AGENTS, NETWORK_CONFIG
 from .network import Network
 from .agent import Agent
 from .logger import Logger
@@ -9,35 +9,28 @@ from .stats import StatCollector
 
 
 class Simulator:
-    name = ""
-    l = None  # Logger
-    sc = None  # StatCollector
-    config = {}
-    status = Status.NOT_INITIALIZED
-    stop_request = False
-    network = None
-    agents = []
-
     def __init__(self, name):
+        self.stop_request = False
         self.name = name
-        self.l = Logger(name)
-        self.sc = StatCollector(name)
         self.read_config()
-        self.status = Status.WAITING
-
-    def read_config(self):
-        full_path = "configs/" + self.name + ".toml"
-        self.l.log("Reading config: " + full_path)
-        self.config = toml.load(full_path)
+        self.l = Logger(name, self.config[LOGGING_CONFIG])
         self.l.log(
             "Config read: \n"
             + str(self.config)
             + "\n********** end of config dump **********"
         )
+        self.sc = StatCollector(name)
+        self.sc.record_config(self.config)
+        self.agents = []
+        self.status = Status.WAITING
+
+    def read_config(self):
+        full_path = "configs/" + self.name + ".toml"
+        self.config = toml.load(full_path)
 
     def generate_agents(self):
-        config = self.config["agents"]
-        n = config["num_of_agents"]
+        config = self.config[AGENT_CONFIG]
+        n = config[NUM_OF_AGENTS]
 
         self.l.log("Generating " + str(n) + " agents.")
         for i in range(n):
@@ -61,8 +54,8 @@ class Simulator:
         self.l.stop_request = True
         self.sc.stop_request = True
 
-        self.l.log_q.put("exit")
-        self.sc.stat_q.put("exit")
+        self.l.log("exit")
+        self.sc.dummy()
 
         while self.l.status != Status.STOPPED or self.sc.status != Status.STOPPED:
             sleep(0.1)
@@ -71,15 +64,19 @@ class Simulator:
         self.status = Status.RUNNING
         self.l.log("Starting the simulation.")
 
-        self.network = Network(self.name, self.l, self.sc, self.config["network"])
+        self.network = Network(self.name, self.l, self.sc, self.config[NETWORK_CONFIG])
         self.network.dump()
         self.generate_agents()
         self.start_agents()
 
-        while not self.stop_request:
-            sleep(0.5)
+        while True:
+            if self.stop_request:
+                self.stop_agents()
+                break
+            if not Status.RUNNING in [agent.status for agent in self.agents]:
+                break
+            sleep(1)
 
-        self.stop_agents()
         self.stop_logger_and_stat_collector()
         self.l.log("Stopping the simulation.")
         print("Simulator " + self.name + " stopped.")

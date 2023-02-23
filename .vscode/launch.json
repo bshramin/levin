@@ -6,7 +6,7 @@
       "type": "python",
       "request": "launch",
       "program": "src/main.py",
-      "args": ["private", "transparent"],
+      "args": ["transparent"],
       "console": "integratedTerminal",
       "justMyCode": true
     }

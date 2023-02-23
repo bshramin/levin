@@ -2,20 +2,18 @@ import os
 from datetime import datetime
 from queue import Queue
 from threading import Thread
-from .consts import Status
+from .consts import Status, ENABLED
 
 
 class Logger:
-    name = ""
-    log_q = None
-    file = None
-    stop_request = False
-    status = Status.NOT_INITIALIZED
-
-    def __init__(
-        self,
-        name,
-    ):
+    def __init__(self, name, config):
+        if config[ENABLED] == False:
+            self.stop_request = True
+            self.enabled = False
+            self.status = Status.STOPPED
+            return
+        self.stop_request = False
+        self.enabled = True
         self.name = name
         self.log_q = Queue(maxsize=1000)
         self.open_log_file(name)
@@ -47,4 +45,5 @@ class Logger:
         thread.start()
 
     def log(self, message):
-        self.log_q.put(message)
+        if self.enabled:
+            self.log_q.put(message)

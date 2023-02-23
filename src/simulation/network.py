@@ -20,13 +20,11 @@ class Network:
 
     def query_channel(self, src, dst):
         self.sc.record_rtt(1)
-        self.l.log("Recorded 1 RTT for query_channel")
         edge = self.graph.get_edge_data(src, dst)
         return edge
 
     def execute_transaction(self, route, amount):
         self.sc.record_rtt(4)
-        self.l.log("Recorded 4 RTTs for transaction")
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
             if edge["available_sats"] < amount:

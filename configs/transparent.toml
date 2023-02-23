@@ -1,3 +1,6 @@
+[logging]
+enabled = false # Enable logging
+
 [network]
 # You can use an exact number to reproduce the psoudo random results
 seed = 1677085608
@@ -12,7 +15,7 @@ sats_max = 3000000 # Maximum amount of satoshies in each side of the channel
 
 [agents]
 seed = 1677085608
-num_of_transactions = 3000 # Total number of transactions a single agent will make
+num_of_transactions = 300 # Total number of transactions a single agent will make
 num_of_agents = 1 # They work concurrently
 tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 100000 # Minimum amount of satoshies in each transaction
