@@ -21,7 +21,7 @@ class Network:
     def query_channel(self, src, dst):
         self.sc.record_rtt(1)
         edge = self.graph.get_edge_data(src, dst)
-        return edge["available_sats"]
+        return edge
 
     def execute_transaction(self, route, amount):
         self.sc.record_rtt(4)
