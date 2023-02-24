@@ -6,12 +6,10 @@ from simulation.consts import Status, StatType
 
 
 class StatCollector:
-    def __init__(
-        self,
-        name,
-    ):
+    def __init__(self, name, logger):
         self.stop_request = False
         self.name = name
+        self.l = logger
         self.stat_q = Queue(maxsize=10000)
         self.initialize_data()
         self.status = Status.WAITING
@@ -38,8 +36,8 @@ class StatCollector:
                     self.stat_data[type.value] = value
                 elif type == StatType.DUMMY:
                     pass
-            except:
-                pass  # Ignore stats with unknown format
+            except Exception as e:
+                self.l.log(f"Unknown stat format: {str(stat)}, {str(e)}")
 
         self.stat_data[StatType.SIMULATION_DURATION.value] = str(
             datetime.now() - self.start_time
@@ -62,6 +60,7 @@ class StatCollector:
         self.stat_data[StatType.TX_SUCCESS_COUNT.value] = 0
         self.stat_data[StatType.TX_TRY_COUNT.value] = 0
         self.stat_data[StatType.TX_NO_ROUTE.value] = 0
+        self.stat_data[StatType.QUERY_COUNT.value] = 0
 
     def start(self):
         self.start_time = datetime.now()

@@ -19,7 +19,7 @@ class Simulator:
             + str(self.config)
             + "\n********** end of config dump **********"
         )
-        self.sc = StatCollector(name)
+        self.sc = StatCollector(name, self.l)
         self.sc.record_config(self.config)
         self.agents = []
         self.status = Status.WAITING
