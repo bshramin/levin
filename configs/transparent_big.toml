@@ -10,6 +10,9 @@ seed = 1677085608
 topology = "random"
 nodes_num = 16216
 channels_num = 76367
+# IDEA: add channel fees
+# IDEA: use distributions to generate the channel capacity
+# IDEA: separate right and left side of the channel
 sats_min = 260000 # Minimum amount of satoshies in each side of the channel
 sats_max = 3000000 # Maximum amount of satoshies in each side of the channel
 

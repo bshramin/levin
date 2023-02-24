@@ -10,6 +10,8 @@ from .stats import StatCollector
 
 class Simulator:
     def __init__(self, name):
+        self.config = None
+        self.network = None
         self.stop_request = False
         self.name = name
         self.read_config()
@@ -65,7 +67,7 @@ class Simulator:
         self.l.log("Starting the simulation.")
 
         self.network = Network(self.name, self.l, self.sc, self.config[NETWORK_CONFIG])
-        self.network.dump()
+        # self.network.dump()
         self.generate_agents()
         self.start_agents()
 
