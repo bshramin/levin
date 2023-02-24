@@ -31,6 +31,7 @@ class StatCollector:
                     StatType.TX_SUCCESS_COUNT,
                     StatType.TX_TRY_COUNT,
                     StatType.TX_NO_ROUTE,
+                    StatType.QUERY_COUNT,
                 ]:
                     self.stat_data[type.value] += value
                 elif type == StatType.CONFIG:
@@ -72,12 +73,13 @@ class StatCollector:
         self.stat_q.put({"type": StatType.DUMMY})
 
     def record_config(self, config):
-        self.stat_q.put(
-            {"value": f"{config}\n**************\n", "type": StatType.CONFIG}
-        )
+        self.stat_q.put({"value": f"{config}", "type": StatType.CONFIG})
 
     def record_rtt(self, count):
         self.stat_q.put({"value": count, "type": StatType.RTT_COUNT})
+
+    def record_query(self, count):
+        self.stat_q.put({"value": count, "type": StatType.QUERY_COUNT})
 
     def record_tx_try(self):
         self.stat_q.put({"value": 1, "type": StatType.TX_TRY_COUNT})

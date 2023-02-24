@@ -14,6 +14,7 @@ class StatType(Enum):
     TX_SUCCESS_COUNT = "tx_success_count"
     TX_TRY_COUNT = "tx_try_count"
     TX_NO_ROUTE = "tx_no_route"
+    QUERY_COUNT = "query_count"
     SIMULATION_DURATION = "simulation_duration"
 
 
