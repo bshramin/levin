@@ -20,5 +20,5 @@ num_of_agents = 1 # They work concurrently
 tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 100000 # Minimum amount of satoshies in each transaction
 tx_amount_max = 1000000 # Maximum amount of satoshies in each transaction
-tx_maximum_route_tries = 10 # Maximum number of attempts to find a route for a transaction
+tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
 routing_algorithm = "shortest_path" # ["BFS"]

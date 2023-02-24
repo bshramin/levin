@@ -8,6 +8,7 @@ from .consts import (
     TX_AMOUNT_MIN,
     ROUTING_ALGORITHM,
     NUM_OF_TRANSACTIONS,
+    TX_MAX_ROUTE_TRIES,
     RoutingAlgorithms,
 )
 from random import Random
@@ -44,21 +45,25 @@ class Agent:
         try:
             is_success = False
             error_edges = []
-            while not is_success:
+            routes_tried = 0
+            while not is_success and routes_tried <= self.config[TX_MAX_ROUTE_TRIES]:
                 route = self.router.find_route(
                     self.network, src, dst, amount, error_edges
                 )
                 if len(route) == 0:
                     self.log("transaction failed - no route")
                     self.sc.record_tx_no_route()
-                    break
+                    return
                 self.sc.record_tx_try()
+                routes_tried += 1
                 is_success, error_edge = self.network.execute_transaction(route, amount)
                 if is_success:
                     self.sc.record_tx_success()
                     self.log("transaction succeeded")
-                    break
+                    return
                 error_edges.append(error_edge)
+            self.sc.record_tx_no_route()
+            self.log("transaction failed - no route")
         except Exception as e:
             self.sc.record_tx_no_route()
             self.log(f"transaction failed {e}")

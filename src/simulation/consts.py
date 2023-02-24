@@ -36,6 +36,7 @@ TX_REST = "tx_rest"
 TX_AMOUNT_MIN = "tx_amount_min"
 TX_AMOUNT_MAX = "tx_amount_max"
 ROUTING_ALGORITHM = "routing_algorithm"
+TX_MAX_ROUTE_TRIES = "tx_max_route_tries"
 
 
 class RoutingAlgorithms(Enum):
