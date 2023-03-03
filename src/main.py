@@ -1,5 +1,4 @@
 import sys
-from queue import Queue
 from time import sleep
 from simulation import Simulator, Status
 

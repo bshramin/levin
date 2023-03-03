@@ -16,7 +16,7 @@ from .routers import ShortestPathRouter, TransparentRouter
 
 
 class Agent:
-    def __init__(self, task_name, id, logger, stats_collector, network, config):
+    def __init__(self, task_name, id, logger, stats_collector, network, config, simulation_stop_request_q):
         self.stop_request = False
         self.task_name = task_name
         self.id = id
@@ -24,24 +24,30 @@ class Agent:
         self.sc = stats_collector
         self.config = config
         self.network = network
+        self.router = None
         self.rand = Random(config[SEED] + id)
         self.stop_request = False
         self.status = Status.WAITING
         self.total_transactions = 0
         self.set_router(config)
+        self.simulation_stop_request_q = simulation_stop_request_q
 
     def set_router(self, config):
         if config[ROUTING_ALGORITHM] == RoutingAlgorithms.SHORTEST_PATH.value:
             self.router = ShortestPathRouter()
         elif config[ROUTING_ALGORITHM] == RoutingAlgorithms.TRANSPARENT.value:
             self.router = TransparentRouter()
+        else:
+            raise Exception("invalid routing algorithm: " + config[ROUTING_ALGORITHM])
 
     def send_transaction(self):
         src, dst = self.choose_src_and_dst()
         amount = self.choose_amount()
-        self.log(
-            f"sending transaction from {str(src)} to {str(dst)} amount: {str(amount)}"
-        )
+        while self.network.get_total_balance(src) < amount:
+            self.log(f"sending {amount} sats from {src}, not enough balance, choosing new src and dst")
+            src, dst = self.choose_src_and_dst()
+            amount = self.choose_amount()
+        self.log(f"sending transaction from {str(src)} to {str(dst)} amount: {str(amount)}")
         try:
             is_success = False
             error_edges = []
@@ -51,8 +57,7 @@ class Agent:
                     self.network, src, dst, amount, error_edges
                 )
                 if len(route) == 0:
-                    self.log("transaction failed - no route")
-                    self.sc.record_tx_no_route()
+                    self.tx_routing_failed()
                     return
                 self.sc.record_tx_try()
                 routes_tried += 1
@@ -62,11 +67,16 @@ class Agent:
                     self.log("transaction succeeded")
                     return
                 error_edges.append(error_edge)
-            self.sc.record_tx_no_route()
-            self.log("transaction failed - no route")
+            self.tx_routing_failed()
         except Exception as e:
-            self.sc.record_tx_no_route()
-            self.log(f"transaction failed {e}")
+            self.log(f"{e}")
+            self.tx_routing_failed()
+
+    def tx_routing_failed(self):
+        self.sc.record_tx_no_route()
+        self.log("transaction failed - no route")
+        if self.config["method"] == "until_failure":
+            self.simulation_stop_request_q.put(self.task_name)
 
     def choose_src_and_dst(self):
         nodes = list(self.network.graph.nodes())

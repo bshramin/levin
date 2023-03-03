@@ -27,6 +27,19 @@ ENABLED = "enabled"
 # Network
 NETWORK_CONFIG = "network"
 SEED = "seed"
+TOPOLOGY = "topology"
+TOPOLOGY_RANDOM = "random"
+TOPOLOGY_PATH = "path"
+TOPOLOGY_STAR = "star"
+TOPOLOGY_COMPLETE = "complete"
+TOPOLOGY_BALANCED_TREE = "balanced_tree"
+TOPOLOGY_FILE = "file"
+TOPOLOGY_FILE_PATH = "path"
+NODES_NUM = "nodes_num"
+CHANNELS_NUM = "channels_num"
+SATS_MIN = "sats_min"
+SATS_MAX = "sats_max"
+
 
 # Agents
 AGENT_CONFIG = "agents"
