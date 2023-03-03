@@ -1,0 +1,25 @@
+[logging]
+enabled = false # Enable logging
+
+[network]
+# You can use an exact number to reproduce the psoudo random results
+seed = 1677085608
+# All topologies will be connected with no self-loops
+# ["random", "path", "star", "complete", "balanced_tree"]
+# IDEA: add reading network topology from a file
+topology = "balanced_tree"
+nodes_num = 200
+channels_num = 76367 # For "path", "star", "complete", "binary_tree" topologies, the number of channels will be ignored
+sats_min = 300000 # Minimum amount of satoshies in each side of the channel
+sats_max = 300000 # Maximum amount of satoshies in each side of the channel
+
+[agents]
+seed = 167708560
+method = "until_failure" # ["until_failure", "until_num_of_transactions"]
+num_of_transactions = 3000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+num_of_agents = 1 # They work concurrently
+tx_rest = 0 # Delay between transactions for each agent in seconds
+tx_amount_min = 10000 # Minimum amount of satoshies in each transaction
+tx_amount_max = 10000 # Maximum amount of satoshies in each transaction
+tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
+routing_algorithm = "shortest_path" # ["BFS"]
