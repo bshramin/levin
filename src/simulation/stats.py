@@ -18,7 +18,7 @@ class StatCollector:
     def run(self):
         #  There is only one instance running per simulation config so no need for locks
         self.status = Status.RUNNING
-        while not self.stop_request:
+        while not self.stop_request or not self.stat_q.empty():
             stat = self.stat_q.get()
             try:
                 type = stat["type"]
@@ -39,9 +39,7 @@ class StatCollector:
             except Exception as e:
                 self.l.log(f"Unknown stat format: {str(stat)}, {str(e)}")
 
-        self.stat_data[StatType.SIMULATION_DURATION.value] = str(
-            datetime.now() - self.start_time
-        )
+        self.stat_data[StatType.SIMULATION_DURATION.value] = str(datetime.now() - self.start_time)
         self.write_stats_to_file()
         self.status = Status.STOPPED
 

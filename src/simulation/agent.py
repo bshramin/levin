@@ -16,7 +16,7 @@ from .routers import ShortestPathRouter, TransparentRouter
 
 
 class Agent:
-    def __init__(self, task_name, id, logger, stats_collector, network, config, simulation_stop_request_q):
+    def __init__(self, task_name, id, logger, stats_collector, network, config):
         self.stop_request = False
         self.task_name = task_name
         self.id = id
@@ -30,7 +30,6 @@ class Agent:
         self.status = Status.WAITING
         self.total_transactions = 0
         self.set_router(config)
-        self.simulation_stop_request_q = simulation_stop_request_q
 
     def set_router(self, config):
         if config[ROUTING_ALGORITHM] == RoutingAlgorithms.SHORTEST_PATH.value:
@@ -75,8 +74,6 @@ class Agent:
     def tx_routing_failed(self):
         self.sc.record_tx_no_route()
         self.log("transaction failed - no route")
-        if self.config["method"] == "until_failure":
-            self.simulation_stop_request_q.put(self.task_name)
 
     def choose_src_and_dst(self):
         nodes = list(self.network.graph.nodes())

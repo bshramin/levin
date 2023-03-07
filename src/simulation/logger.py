@@ -29,7 +29,7 @@ class Logger:
 
     def run(self):
         self.status = Status.RUNNING
-        while not self.stop_request:
+        while not self.stop_request or not self.log_q.empty():
             log = self.log_q.get()
             try:
                 self.file.write(log + "\n")

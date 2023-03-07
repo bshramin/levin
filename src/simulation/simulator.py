@@ -1,6 +1,5 @@
 import toml
 from time import sleep
-from queue import Queue
 from threading import Thread
 from .consts import Status, LOGGING_CONFIG, AGENT_CONFIG, NUM_OF_AGENTS, NETWORK_CONFIG
 from .network import Network
@@ -17,7 +16,6 @@ class Simulator:
         self.name = name
         self.read_config()
         self.l = Logger(name, self.config[LOGGING_CONFIG])
-        self.simulation_stop_request_q = Queue()
         self.l.log(
             "Config read: \n"
             + str(self.config)
@@ -39,7 +37,7 @@ class Simulator:
         self.l.log("Generating " + str(n) + " agents.")
         for i in range(n):
             self.agents.append(
-                Agent(self.name, i, self.l, self.sc, self.network, config, self.simulation_stop_request_q)
+                Agent(self.name, i, self.l, self.sc, self.network, config)
             )
 
     def start_agents(self):
@@ -73,20 +71,15 @@ class Simulator:
         self.generate_agents()
         self.start_agents()
 
-        while True:
-            if self.stop_request:
-                self.stop_agents()
-                break
+        while not self.stop_request:
             if Status.RUNNING not in [agent.status for agent in self.agents]:
                 break
-            if not self.simulation_stop_request_q.empty():
-                self.stop_request = True
-                self.stop_agents()
-                break
-            sleep(1)
+            sleep(0.1)
 
-        self.stop_logger_and_stat_collector()
+        self.stop_request = True
+        self.stop_agents()
         self.l.log("Stopping the simulation.")
+        self.stop_logger_and_stat_collector()
         print("Simulator " + self.name + " stopped.")
         self.status = Status.STOPPED
 
