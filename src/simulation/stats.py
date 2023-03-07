@@ -6,10 +6,11 @@ from simulation.consts import Status, StatType
 
 
 class StatCollector:
-    def __init__(self, name, logger):
+    def __init__(self, name, logger, num_of_rounds):
         self.stop_request = False
         self.name = name
         self.l = logger
+        self.num_of_rounds = num_of_rounds
         self.stat_q = Queue(maxsize=10000)
         self.stat_data = None
         self.initialize_data()
@@ -48,6 +49,10 @@ class StatCollector:
         self.status = Status.STOPPED
 
     def write_stats_to_file(self):
+        for key in self.stat_data:
+            if key not in [StatType.CONFIG.value, StatType.SIMULATION_DURATION.value]:
+                self.stat_data[key] /= self.num_of_rounds
+
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = "stats/" + self.name + "/" + timestamp + ".json"
         os.makedirs(os.path.dirname(file_name), exist_ok=True)

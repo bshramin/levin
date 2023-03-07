@@ -1,6 +1,9 @@
 # Levin
 
 ## Running Levin
+```shell
+python3 src/main.py [TEMPLATE_NAME_1] [TEMPLATE_NAME_2] [TEMPLATE_NAME_3] ...
+```
 
 ### Using Docker
 
@@ -16,7 +19,7 @@ pipenv shell
 ## Compression TODO:
 - [X] Add re-opening
 - [X] Add count re-openings till number of transactions
-- [ ] Run multiple times and average
+- [X] Run multiple times and average
 - [X] Decrease numbers to make debugging simpler
 
 

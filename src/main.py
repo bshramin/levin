@@ -25,10 +25,10 @@ if __name__ == "__main__":
             break
         if command == "l" or command == "list":
             for simulator in simulators:
-                print(simulator + ": " + simulators[simulator].status.name)
+                print("Simulator " + simulator + ": " + simulators[simulator].status.name)
                 for agent in simulators[simulator].agents:
                     print(
-                        "    Agent "
+                        "   Agent "
                         + str(agent.id)
                         + ": "
                         + agent.status.name

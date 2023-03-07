@@ -19,7 +19,13 @@ class StatType(Enum):
     TX_FAIL_COUNT = "tx_fail_count"
     CHANNELS_REOPEN_COUNT = "channels_reopen_count"
 
+
 # Config keys
+
+# Simulation
+SIMULATION_CONFIG = "simulation"
+NUM_OF_ROUNDS = "num_of_rounds"
+NUM_OF_AGENTS = "num_of_agents"
 
 # Logging
 LOGGING_CONFIG = "logging"
@@ -42,11 +48,9 @@ SATS_MIN = "sats_min"
 SATS_MAX = "sats_max"
 REOPEN = "reopen"
 
-
 # Agents
 AGENT_CONFIG = "agents"
 NUM_OF_TRANSACTIONS = "num_of_transactions"
-NUM_OF_AGENTS = "num_of_agents"
 TX_REST = "tx_rest"
 TX_AMOUNT_MIN = "tx_amount_min"
 TX_AMOUNT_MAX = "tx_amount_max"
