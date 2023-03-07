@@ -47,29 +47,22 @@ class Agent:
             src, dst = self.choose_src_and_dst()
             amount = self.choose_amount()
         self.log(f"sending transaction from {str(src)} to {str(dst)} amount: {str(amount)}")
-        try:
-            is_success = False
-            error_edges = []
-            routes_tried = 0
-            while not is_success and routes_tried <= self.config[TX_MAX_ROUTE_TRIES]:
-                route = self.router.find_route(
-                    self.network, src, dst, amount, error_edges
-                )
-                if len(route) == 0:
-                    self.tx_routing_failed()
-                    return
-                self.sc.record_tx_try()
-                routes_tried += 1
-                is_success, error_edge = self.network.execute_transaction(route, amount)
-                if is_success:
-                    self.sc.record_tx_success()
-                    self.log("transaction succeeded")
-                    return
-                error_edges.append(error_edge)
-            self.tx_routing_failed()
-        except Exception as e:
-            self.log(f"{e}")
-            self.tx_routing_failed()
+        is_success = False
+        error_edges = []
+        routes_tried = 0
+        while not is_success and routes_tried <= self.config[TX_MAX_ROUTE_TRIES]:
+            route = self.router.find_route(
+                self.network, src, dst, amount, error_edges
+            )
+            if len(route) == 0:
+                break
+            routes_tried += 1
+            is_success, error_edge = self.network.execute_transaction(route, amount)
+            if is_success:
+                self.log("transaction succeeded")
+                return
+            error_edges.append(error_edge)
+        self.tx_routing_failed()
 
     def tx_routing_failed(self):
         self.sc.record_tx_no_route()

@@ -12,7 +12,10 @@ class ShortestPathRouter(Router):
             graph.remove_edge(error_edge[0], error_edge[1])
 
         while True:
-            route = nx.shortest_path(graph, src, dst)
+            try:
+                route = nx.shortest_path(graph, src, dst)
+            except nx.NetworkXNoPath:
+                return []
             if len(route) == 0:
                 return []
             for i in range(len(route) - 1):

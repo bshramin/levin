@@ -12,3 +12,13 @@ Use Pipenv to manage the virtual environment and dependencies.
 ```bash
 pipenv shell
 ```
+
+## Compression TODO:
+- [X] Add re-opening
+- [X] Add count re-openings till number of transactions
+- [ ] Run multiple times and average
+- [X] Decrease numbers to make debugging simpler
+
+
+## Transparent TODO:
+- [ ] Run concurrent agents

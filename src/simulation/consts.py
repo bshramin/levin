@@ -16,7 +16,8 @@ class StatType(Enum):
     TX_NO_ROUTE = "tx_no_route"
     QUERY_COUNT = "query_count"
     SIMULATION_DURATION = "simulation_duration"
-
+    TX_FAIL_COUNT = "tx_fail_count"
+    CHANNELS_REOPEN_COUNT = "channels_reopen_count"
 
 # Config keys
 
@@ -39,6 +40,7 @@ NODES_NUM = "nodes_num"
 CHANNELS_NUM = "channels_num"
 SATS_MIN = "sats_min"
 SATS_MAX = "sats_max"
+REOPEN = "reopen"
 
 
 # Agents

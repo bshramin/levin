@@ -4,7 +4,7 @@ import networkx as nx
 from random import Random
 from threading import Lock
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
-    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE
+    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN
 
 FULL_CHANNEL_BALANCE = "full_channel_balance"
 LOCKED_SATS = "locked_sats"
@@ -25,6 +25,7 @@ class Network:
         self.sc = stat_collector
         self.rand = Random(network_config[SEED])
         self.graph = self.build_graph_from_config(network_config)
+        self.config = network_config
 
     def get_total_balance(self, node):
         balance = 0
@@ -40,18 +41,35 @@ class Network:
         return edge
 
     def execute_transaction(self, route, amount):
+        self.sc.record_tx_try()
         for i in range(len(route) - 1):
             self.sc.record_rtt(3)
             edge = self.graph.get_edge_data(route[i], route[i + 1])
             if edge[AVAILABLE_SATS] < amount:
-                for j in range(0, i):
-                    self.sc.record_rtt(3)
-                    edge = self.graph.get_edge_data(route[j], route[j + 1])
+                if self.config[REOPEN] and amount < edge[FULL_CHANNEL_BALANCE] / 2:
+                    reverse_of_edge = self.graph.get_edge_data(route[i + 1], route[i])
+                    while edge[LOCKED_SATS] > 0 or reverse_of_edge[LOCKED_SATS] > 0:
+                        pass
                     edge[LOCK].acquire()
-                    edge[AVAILABLE_SATS] += amount
-                    edge[LOCKED_SATS] -= amount
+                    reverse_of_edge[LOCK].acquire()
+                    edge[AVAILABLE_SATS] = edge[FULL_CHANNEL_BALANCE] / 2
+                    reverse_of_edge[AVAILABLE_SATS] = edge[FULL_CHANNEL_BALANCE] / 2
+                    edge[LOCKED_SATS] = 0
+                    reverse_of_edge[LOCKED_SATS] = 0
                     edge[LOCK].release()
-                return False, (route[i], route[i + 1])
+                    reverse_of_edge[LOCK].release()
+                    self.sc.record_channel_reopen()
+                    self.sc.record_rtt(3)   # TODO: this is not accurate
+                else:
+                    for j in range(0, i):
+                        self.sc.record_rtt(3)
+                        edge = self.graph.get_edge_data(route[j], route[j + 1])
+                        edge[LOCK].acquire()
+                        edge[AVAILABLE_SATS] += amount
+                        edge[LOCKED_SATS] -= amount
+                        edge[LOCK].release()
+                    self.sc.record_tx_fail()
+                    return False, (route[i], route[i + 1])
             edge[LOCK].acquire()
             edge[AVAILABLE_SATS] -= amount
             edge[LOCKED_SATS] += amount
@@ -67,6 +85,7 @@ class Network:
             edge[LOCK].release()
             reverse_edge[LOCK].release()
 
+        self.sc.record_tx_success()
         return True, None
 
     def build_graph_from_config(self, nc):

@@ -11,8 +11,10 @@ class StatCollector:
         self.name = name
         self.l = logger
         self.stat_q = Queue(maxsize=10000)
+        self.stat_data = None
         self.initialize_data()
         self.status = Status.WAITING
+        self.start_time = None
         self.start()
 
     def run(self):
@@ -30,6 +32,8 @@ class StatCollector:
                     StatType.TX_TRY_COUNT,
                     StatType.TX_NO_ROUTE,
                     StatType.QUERY_COUNT,
+                    StatType.TX_FAIL_COUNT,
+                    StatType.CHANNELS_REOPEN_COUNT
                 ]:
                     self.stat_data[type.value] += value
                 elif type == StatType.CONFIG:
@@ -52,13 +56,16 @@ class StatCollector:
         f.close()
 
     def initialize_data(self):
-        self.stat_data = {}
-        self.stat_data[StatType.CONFIG.value] = None
-        self.stat_data[StatType.RTT_COUNT.value] = 0
-        self.stat_data[StatType.TX_SUCCESS_COUNT.value] = 0
-        self.stat_data[StatType.TX_TRY_COUNT.value] = 0
-        self.stat_data[StatType.TX_NO_ROUTE.value] = 0
-        self.stat_data[StatType.QUERY_COUNT.value] = 0
+        self.stat_data = {
+            StatType.CONFIG.value: None,
+            StatType.RTT_COUNT.value: 0,
+            StatType.TX_SUCCESS_COUNT.value: 0,
+            StatType.TX_TRY_COUNT.value: 0,
+            StatType.TX_NO_ROUTE.value: 0,
+            StatType.QUERY_COUNT.value: 0,
+            StatType.TX_FAIL_COUNT.value: 0,
+            StatType.CHANNELS_REOPEN_COUNT.value: 0,
+        }
 
     def start(self):
         self.start_time = datetime.now()
@@ -86,3 +93,9 @@ class StatCollector:
 
     def record_tx_no_route(self):
         self.stat_q.put({"value": 1, "type": StatType.TX_NO_ROUTE})
+
+    def record_tx_fail(self):
+        self.stat_q.put({"value": 1, "type": StatType.TX_FAIL_COUNT})
+
+    def record_channel_reopen(self):
+        self.stat_q.put({"value": 1, "type": StatType.CHANNELS_REOPEN_COUNT})

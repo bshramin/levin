@@ -8,18 +8,18 @@ seed = 1677085608
 # ["random", "path", "star", "complete", "balanced_tree"]
 # IDEA: add reading network topology from a file
 topology = "balanced_tree"
-nodes_num = 200
-channels_num = 76367 # For "path", "star", "complete", "binary_tree" topologies, the number of channels will be ignored
-sats_min = 300000 # Minimum amount of satoshies in each side of the channel
-sats_max = 300000 # Maximum amount of satoshies in each side of the channel
+nodes_num = 10
+channels_num = 76367 # For "path", "star", "complete", "balanced_tree" topologies, the number of channels will be ignored
+sats_min = 10 # Minimum amount of satoshies in each side of the channel
+sats_max = 10 # Maximum amount of satoshies in each side of the channel
+reopen = true # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
 
 [agents]
-seed = 167708560
-method = "until_failure" # ["until_failure", "until_num_of_transactions"]
-num_of_transactions = 3000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+seed = 1677085608
+num_of_transactions = 10000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 num_of_agents = 1 # They work concurrently
 tx_rest = 0 # Delay between transactions for each agent in seconds
-tx_amount_min = 10000 # Minimum amount of satoshies in each transaction
-tx_amount_max = 10000 # Maximum amount of satoshies in each transaction
-tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
-routing_algorithm = "shortest_path" # ["BFS"]
+tx_amount_min = 1 # Minimum amount of satoshies in each transaction
+tx_amount_max = 1 # Maximum amount of satoshies in each transaction
+tx_max_route_tries = 1 # Maximum number of attempts to find a route for a transaction
+routing_algorithm = "shortest_path" # ["shortest_path", "transparent"] # TODO: separate transparency and routing algorithm

@@ -11,7 +11,10 @@ class TransparentRouter(Router):
     def find_route(self, network, src, dst, amount, failed_edges=[]):
         graph = network.graph.copy()
         while True:
-            route = nx.shortest_path(graph, src, dst)
+            try:
+                route = nx.shortest_path(graph, src, dst)
+            except nx.NetworkXNoPath:
+                return []
             if len(route) == 0:
                 return []
             for i in range(len(route) - 1):
