@@ -1,0 +1,11 @@
+{
+  'channels_reopen_count': 0.0,
+  'config': "{'simulation': {'num_of_rounds': 1, 'num_of_agents': 10}, 'logging': {'enabled': False}, 'network': {'seed': 1677085608, 'topology': 'random', 'nodes_num': 10000, 'channels_num': 70000, 'sats_min': 300000, 'sats_max': 3000000, 'reopen': False}, 'agents': {'seed': 1677085608, 'check_source_balance': True, 'num_of_transactions': 200, 'tx_rest': 0, 'tx_amount_min': 100000, 'tx_amount_max': 1000000, 'tx_max_route_tries': 10, 'routing_algorithm': 'shortest_path'}}",
+  'query_count': 0.0,
+  'rtt_count': 39702.0,
+  'simulation_duration': '1:00:52.159692',
+  'tx_fail_count': 1447.0,
+  'tx_no_route': 4.0,
+  'tx_success_count': 1996.0,
+  'tx_try_count': 3443.0
+}
