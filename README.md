@@ -21,7 +21,11 @@ pipenv shell
 - [X] Add count re-openings till number of transactions
 - [X] Run multiple times and average
 - [X] Decrease numbers to make debugging simpler
+- [ ] count initial channel openning as reopenning
 
 
 ## Transparent TODO:
 - [ ] Run concurrent agents
+- [ ]add delay to sending transacti on for each hop
+- [ ] Read network data from file
+
