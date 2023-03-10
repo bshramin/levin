@@ -3,7 +3,7 @@ num_of_rounds = 10 # Number of runs of the simulation, statistics will be averag
 num_of_agents = 1 # They work concurrently
 
 [logging]
-enabled = true # Enable logging
+enabled = false # Enable logging
 
 [network]
 # You can use an exact number to reproduce the psoudo random results
@@ -20,7 +20,8 @@ reopen = true # Reopen closed channels 50-50, # TODO: Reopens channels of the fi
 
 [agents]
 seed = 1677085608
-num_of_transactions = 100000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+check_source_balance = false # Only choose source nodes with enough balance, set this to false only if reopening is enabled
+num_of_transactions = 1000000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 1 # Minimum amount of satoshies in each transaction
 tx_amount_max = 1 # Maximum amount of satoshies in each transaction

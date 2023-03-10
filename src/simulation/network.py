@@ -141,7 +141,7 @@ class Network:
         elif topology == TOPOLOGY_PATH:
             return nx.path_graph(n)
         elif topology == TOPOLOGY_STAR:
-            return nx.star_graph(n)
+            return nx.star_graph(n-1)   # n-1 because the center node is not counted
         elif topology == TOPOLOGY_COMPLETE:
             raise NotImplementedError
         elif topology == TOPOLOGY_BALANCED_TREE:

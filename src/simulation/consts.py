@@ -50,6 +50,7 @@ REOPEN = "reopen"
 
 # Agents
 AGENT_CONFIG = "agents"
+CHECK_SOURCE_BALANCE = "check_source_balance"
 NUM_OF_TRANSACTIONS = "num_of_transactions"
 TX_REST = "tx_rest"
 TX_AMOUNT_MIN = "tx_amount_min"

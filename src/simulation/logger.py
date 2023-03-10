@@ -15,7 +15,7 @@ class Logger:
         self.stop_request = False
         self.enabled = True
         self.name = name
-        self.log_q = Queue(maxsize=1000)
+        self.log_q = Queue(maxsize=10000)
         self.open_log_file(name)
         self.status = Status.WAITING
         self.start()

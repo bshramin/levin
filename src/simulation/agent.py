@@ -9,7 +9,7 @@ from .consts import (
     ROUTING_ALGORITHM,
     NUM_OF_TRANSACTIONS,
     TX_MAX_ROUTE_TRIES,
-    RoutingAlgorithms,
+    RoutingAlgorithms, CHECK_SOURCE_BALANCE,
 )
 from random import Random
 from .routers import ShortestPathRouter, TransparentRouter
@@ -42,7 +42,7 @@ class Agent:
     def send_transaction(self):
         src, dst = self.choose_src_and_dst()
         amount = self.choose_amount()
-        while self.network.get_total_balance(src) < amount:
+        while self.config[CHECK_SOURCE_BALANCE] and self.network.get_total_balance(src) < amount:
             self.log(f"sending {amount} sats from {src}, not enough balance, choosing new src and dst")
             src, dst = self.choose_src_and_dst()
             amount = self.choose_amount()
