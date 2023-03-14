@@ -17,6 +17,7 @@ channels_num = 76367 # For "path", "star", "complete", "balanced_tree" topologie
 sats_min = 10 # Minimum amount of satoshies in each side of the channel
 sats_max = 10 # Maximum amount of satoshies in each side of the channel
 reopen = true # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
+count_initial_channels_as_reopens = false # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
 
 [agents]
 seed = 1677085608

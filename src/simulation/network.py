@@ -4,7 +4,7 @@ import networkx as nx
 from random import Random
 from threading import Lock
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
-    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN
+    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN, COUNT_INITIAL_CHANNELS_AS_REOPENS
 
 FULL_CHANNEL_BALANCE = "full_channel_balance"
 LOCKED_SATS = "locked_sats"
@@ -24,8 +24,8 @@ class Network:
         self.l = logger
         self.sc = stat_collector
         self.rand = Random(network_config[SEED])
-        self.graph = self.build_graph_from_config(network_config)
         self.config = network_config
+        self.graph = self.build_graph_from_config()
 
     def get_total_balance(self, node):
         balance = 0
@@ -88,13 +88,14 @@ class Network:
         self.sc.record_tx_success()
         return True, None
 
-    def build_graph_from_config(self, nc):
-        seed = nc[SEED]
-        n = nc[NODES_NUM]
-        m = nc[CHANNELS_NUM]
-        sats_min = nc[SATS_MIN]
-        sats_max = nc[SATS_MAX]
-        topology = nc[TOPOLOGY]
+    def build_graph_from_config(self):
+        seed = self.config[SEED]
+        n = self.config[NODES_NUM]
+        m = self.config[CHANNELS_NUM]
+        sats_min = self.config[SATS_MIN]
+        sats_max = self.config[SATS_MAX]
+        topology = self.config[TOPOLOGY]
+        count_initial_channels_as_reopens = self.config[COUNT_INITIAL_CHANNELS_AS_REOPENS]
 
         if m < n - 1:
             raise ValueError(
@@ -106,6 +107,9 @@ class Network:
         while not nx.is_connected(graph) or nx.number_of_selfloops(graph) != 0:
             i += 1
             graph = self.build_undirected_graph_with_topology(topology, n, m, seed+i)
+
+        if count_initial_channels_as_reopens:
+            self.sc.record_channel_reopen(graph.number_of_edges())
 
         graph = self.build_directed_graph_with_channel_balances_from_undirected_graph(graph, sats_min, sats_max)
 

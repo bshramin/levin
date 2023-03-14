@@ -47,6 +47,7 @@ CHANNELS_NUM = "channels_num"
 SATS_MIN = "sats_min"
 SATS_MAX = "sats_max"
 REOPEN = "reopen"
+COUNT_INITIAL_CHANNELS_AS_REOPENS = "count_initial_channels_as_reopens"
 
 # Agents
 AGENT_CONFIG = "agents"
