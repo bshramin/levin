@@ -1,3 +1,4 @@
+import hashlib
 from copy import deepcopy
 
 import toml
@@ -28,6 +29,7 @@ class Simulator:
         self.sc = StatCollector(name, self.l, self.num_of_rounds)
         self.sc.record_config(self.config)
         self.agents = []
+        self.networks = []
         self.status = Status.WAITING
 
     def read_config(self):
@@ -73,10 +75,10 @@ class Simulator:
         network_config = deepcopy(self.config[NETWORK_CONFIG])
         agents_config = deepcopy(self.config[AGENT_CONFIG])
         for i in range(num_of_rounds):
-            network_config[SEED] = hash(str(network_config[SEED]))
-            agents_config[SEED] = hash(str(agents_config[SEED]))
-            network = Network(self.name, self.l, self.sc, network_config)
-            self.generate_agents(network, agents_config)
+            network_config[SEED] = int(hashlib.sha256(bytes(network_config[SEED])).hexdigest(),base=16)
+            agents_config[SEED] = int(hashlib.sha256(bytes(agents_config[SEED])).hexdigest(),base=16)
+            self.networks.append(Network(self.name, self.l, self.sc, network_config))
+            self.generate_agents(self.networks[i], agents_config)
             self.l.log(f"Round {i} generated.")
 
         self.l.log("Starting the simulation.")

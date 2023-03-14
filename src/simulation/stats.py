@@ -102,5 +102,5 @@ class StatCollector:
     def record_tx_fail(self):
         self.stat_q.put({"value": 1, "type": StatType.TX_FAIL_COUNT})
 
-    def record_channel_reopen(self):
-        self.stat_q.put({"value": 1, "type": StatType.CHANNELS_REOPEN_COUNT})
+    def record_channel_reopen(self, count=1):
+        self.stat_q.put({"value": count, "type": StatType.CHANNELS_REOPEN_COUNT})
