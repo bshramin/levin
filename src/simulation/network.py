@@ -18,6 +18,7 @@ class Network:
     sc = None  # StatCollector
     graph = None
     rand = None
+    transactions_routed_without_reopens = 0
 
     def __init__(self, name, logger, stat_collector, network_config):
         self.name = name
@@ -26,6 +27,7 @@ class Network:
         self.rand = Random(network_config[SEED])
         self.config = network_config
         self.graph = self.build_graph_from_config()
+        self.transactions_routed_without_reopens = 0
 
     def get_total_balance(self, node):
         balance = 0
@@ -60,6 +62,8 @@ class Network:
                     reverse_of_edge[LOCK].release()
                     self.sc.record_channel_reopen()
                     self.sc.record_rtt(3)   # TODO: this is not accurate
+                    self.l.log("REOPENED CHANNEL, Transactions between reopens: " + str(self.transactions_routed_without_reopens))
+                    self.transactions_routed_without_reopens = 0
                 else:
                     for j in range(0, i):
                         self.sc.record_rtt(3)
@@ -85,6 +89,7 @@ class Network:
             edge[LOCK].release()
             reverse_edge[LOCK].release()
 
+        self.transactions_routed_without_reopens += 1
         self.sc.record_tx_success()
         return True, None
 
