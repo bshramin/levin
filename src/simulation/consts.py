@@ -46,8 +46,13 @@ NODES_NUM = "nodes_num"
 CHANNELS_NUM = "channels_num"
 SATS_MIN = "sats_min"
 SATS_MAX = "sats_max"
-REOPEN = "reopen"
+REOPEN_ENABLED = "reopen_enabled"
 COUNT_INITIAL_CHANNELS_AS_REOPENS = "count_initial_channels_as_reopens"
+DELAY_ENABLED = "delay_enabled"
+RTT_DELAY = "rtt_delay"
+QUERY_RTTS = "query_rtts"
+TX_HOP_RTTS = "tx_hop_rtts"
+
 
 # Agents
 AGENT_CONFIG = "agents"

@@ -1,10 +1,12 @@
 import math
+import time
 
 import networkx as nx
 from random import Random
 from threading import Lock
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
-    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN, COUNT_INITIAL_CHANNELS_AS_REOPENS
+    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, DELAY_ENABLED, \
+    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS
 
 FULL_CHANNEL_BALANCE = "full_channel_balance"
 LOCKED_SATS = "locked_sats"
@@ -18,7 +20,11 @@ class Network:
     sc = None  # StatCollector
     graph = None
     rand = None
-    transactions_routed_without_reopens = 0
+    transactions_routed_from_last_reopen = 0
+    query_rtts = 0
+    tx_hop_rtts = 0
+    hop_delay = 0
+    query_delay = 0
 
     def __init__(self, name, logger, stat_collector, network_config):
         self.name = name
@@ -27,7 +33,12 @@ class Network:
         self.rand = Random(network_config[SEED])
         self.config = network_config
         self.graph = self.build_graph_from_config()
-        self.transactions_routed_without_reopens = 0
+        self.transactions_routed_from_last_reopen = 0
+        self.query_rtts = self.config[QUERY_RTTS]
+        self.tx_hop_rtts = self.config[TX_HOP_RTTS]
+        if self.config[DELAY_ENABLED]:
+            self.hop_delay = self.config[RTT_DELAY] * self.tx_hop_rtts / 1000
+            self.query_delay = self.config[RTT_DELAY] * self.query_rtts / 1000
 
     def get_total_balance(self, node):
         balance = 0
@@ -37,18 +48,18 @@ class Network:
         return balance
 
     def query_channel(self, src, dst):
-        self.sc.record_rtt(1)
         self.sc.record_query(1)
         edge = self.graph.get_edge_data(src, dst)
+        self.sc.record_rtt(self.query_rtts)
+        time.sleep(self.query_delay)
         return edge
 
     def execute_transaction(self, route, amount):
         self.sc.record_tx_try()
         for i in range(len(route) - 1):
-            self.sc.record_rtt(3)
             edge = self.graph.get_edge_data(route[i], route[i + 1])
             if edge[AVAILABLE_SATS] < amount:
-                if self.config[REOPEN] and amount < edge[FULL_CHANNEL_BALANCE] / 2:
+                if self.config[REOPEN_ENABLED] and amount < edge[FULL_CHANNEL_BALANCE] / 2:
                     reverse_of_edge = self.graph.get_edge_data(route[i + 1], route[i])
                     while edge[LOCKED_SATS] > 0 or reverse_of_edge[LOCKED_SATS] > 0:
                         pass
@@ -61,23 +72,26 @@ class Network:
                     edge[LOCK].release()
                     reverse_of_edge[LOCK].release()
                     self.sc.record_channel_reopen()
-                    self.sc.record_rtt(3)   # TODO: this is not accurate
-                    self.l.log("REOPENED CHANNEL, Transactions between reopens: " + str(self.transactions_routed_without_reopens))
-                    self.transactions_routed_without_reopens = 0
+                    self.sc.record_rtt(self.tx_hop_rtts)   # NOTE: this is not accurate, we should have separate delay and RTT count for reopen
+                    self.l.log("REOPENED CHANNEL, Transactions between reopens: " + str(self.transactions_routed_from_last_reopen))
+                    self.transactions_routed_from_last_reopen = 0
                 else:
                     for j in range(0, i):
-                        self.sc.record_rtt(3)
                         edge = self.graph.get_edge_data(route[j], route[j + 1])
                         edge[LOCK].acquire()
                         edge[AVAILABLE_SATS] += amount
                         edge[LOCKED_SATS] -= amount
                         edge[LOCK].release()
+                        self.sc.record_rtt(self.tx_hop_rtts)
+                        time.sleep(self.hop_delay)
                     self.sc.record_tx_fail()
                     return False, (route[i], route[i + 1])
             edge[LOCK].acquire()
             edge[AVAILABLE_SATS] -= amount
             edge[LOCKED_SATS] += amount
             edge[LOCK].release()
+            self.sc.record_rtt(self.tx_hop_rtts)
+            time.sleep(self.hop_delay)
 
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
@@ -88,8 +102,9 @@ class Network:
             reverse_edge[AVAILABLE_SATS] += amount
             edge[LOCK].release()
             reverse_edge[LOCK].release()
+            # NOTE: There should be some RTT count and delay here too, but it's not important for our results
 
-        self.transactions_routed_without_reopens += 1
+        self.transactions_routed_from_last_reopen += 1
         self.sc.record_tx_success()
         return True, None
 
