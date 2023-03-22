@@ -9,7 +9,7 @@ from .consts import (
     ROUTING_ALGORITHM,
     NUM_OF_TRANSACTIONS,
     TX_MAX_ROUTE_TRIES,
-    RoutingAlgorithms, CHECK_SOURCE_BALANCE,
+    RoutingAlgorithms, CHECK_SOURCE_BALANCE, TX_MAX_QUERY_PER_TX_TRY,
 )
 from random import Random
 from .routers import ShortestPathRouter, TransparentRouter
@@ -29,13 +29,14 @@ class Agent:
         self.stop_request = False
         self.status = Status.WAITING
         self.total_transactions = 0
-        self.set_router(config)
+        self.set_router()
 
-    def set_router(self, config):
-        if config[ROUTING_ALGORITHM] == RoutingAlgorithms.SHORTEST_PATH.value:
+    def set_router(self):
+        routing_algorithm = self.config[ROUTING_ALGORITHM]
+        if routing_algorithm == RoutingAlgorithms.SHORTEST_PATH.value:
             self.router = ShortestPathRouter()
-        elif config[ROUTING_ALGORITHM] == RoutingAlgorithms.TRANSPARENT.value:
-            self.router = TransparentRouter()
+        elif routing_algorithm == RoutingAlgorithms.TRANSPARENT.value:
+            self.router = TransparentRouter(self.config[TX_MAX_QUERY_PER_TX_TRY])
         else:
             raise Exception("invalid routing algorithm: " + config[ROUTING_ALGORITHM])
 

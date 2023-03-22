@@ -22,10 +22,15 @@ pipenv shell
 - [X] Run multiple times and average
 - [X] Decrease numbers to make debugging simpler
 - [X] count initial channel openning as reopenning
-
+- [ ] When do they decide to reopen a channel in the real network?
+- [ ] Read network data from file
+- [ ] Upper bound for the real network
+- 
 
 ## Transparent TODO:
 - [X] Run concurrent agents
 - [X] add delay to sending transactions on for each hop
-- [ ] Read network data from file
-
+- [X] Limit the number of queries per route
+- [ ] Add multipath payment
+- [ ] Add randomness to the delays
+- 
