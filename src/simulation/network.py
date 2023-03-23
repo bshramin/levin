@@ -5,8 +5,9 @@ import networkx as nx
 from random import Random
 from threading import Lock
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
-    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, DELAY_ENABLED, \
-    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS
+    TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, \
+    DELAY_ENABLED, \
+    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD
 
 FULL_CHANNEL_BALANCE = "full_channel_balance"
 LOCKED_SATS = "locked_sats"
@@ -25,6 +26,7 @@ class Network:
     tx_hop_rtts = 0
     hop_delay = 0
     query_delay = 0
+    delay_randomness_threshold = 0
 
     def __init__(self, name, logger, stat_collector, network_config):
         self.name = name
@@ -36,6 +38,7 @@ class Network:
         self.transactions_routed_from_last_reopen = 0
         self.query_rtts = self.config[QUERY_RTTS]
         self.tx_hop_rtts = self.config[TX_HOP_RTTS]
+        self.delay_randomness_threshold = self.config[DELAY_RANDOMNESS_THRESHOLD]
         if self.config[DELAY_ENABLED]:
             self.hop_delay = self.config[RTT_DELAY] * self.tx_hop_rtts / 1000
             self.query_delay = self.config[RTT_DELAY] * self.query_rtts / 1000
@@ -51,8 +54,21 @@ class Network:
         self.sc.record_query(1)
         edge = self.graph.get_edge_data(src, dst)
         self.sc.record_rtt(self.query_rtts)
-        time.sleep(self.query_delay)
+        time.sleep(self.get_query_delay())
         return edge
+
+    def get_query_delay(self):
+        delay_randomness_threshold = self.config[DELAY_RANDOMNESS_THRESHOLD]
+        query_delay = self.query_delay * (
+                1+(self.rand.randint(-self.delay_randomness_threshold*100, self.delay_randomness_threshold*100) / 100)
+        )
+        return query_delay
+
+    def get_hop_delay(self):
+        hop_delay = self.hop_delay * (
+                1+(self.rand.randint(-self.delay_randomness_threshold*100, self.delay_randomness_threshold*100) / 100)
+        )
+        return hop_delay
 
     def execute_transaction(self, route, amount):
         self.sc.record_tx_try()
@@ -83,7 +99,7 @@ class Network:
                         edge[LOCKED_SATS] -= amount
                         edge[LOCK].release()
                         self.sc.record_rtt(self.tx_hop_rtts)
-                        time.sleep(self.hop_delay)
+                        time.sleep(self.get_hop_delay())
                     self.sc.record_tx_fail()
                     return False, (route[i], route[i + 1])
             edge[LOCK].acquire()
@@ -91,7 +107,7 @@ class Network:
             edge[LOCKED_SATS] += amount
             edge[LOCK].release()
             self.sc.record_rtt(self.tx_hop_rtts)
-            time.sleep(self.hop_delay)
+            time.sleep(self.get_hop_delay())
 
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
