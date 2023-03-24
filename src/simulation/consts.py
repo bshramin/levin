@@ -18,6 +18,7 @@ class StatType(Enum):
     SIMULATION_DURATION = "simulation_duration"
     TX_FAIL_COUNT = "tx_fail_count"
     CHANNELS_REOPEN_COUNT = "channels_reopen_count"
+    NETWORK_LATENCY = "network_latency"
 
 
 # Config keys

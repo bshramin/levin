@@ -26,7 +26,7 @@ pipenv shell
 - [ ] When do they decide to reopen a channel in the real network?
 - [ ] Read network data from file (https://bitcoin.stackexchange.com/a/88333/112612)
 - [ ] Upper bound for the real network
-- 
+
 
 ## Transparent TODO:
 - [X] Run concurrent agents
@@ -34,4 +34,4 @@ pipenv shell
 - [X] Limit the number of queries per route
 - [ ] Add multipath payment
 - [X] Add randomness to the delays
-- 
+- [X] Queries of a path get executed in parallel

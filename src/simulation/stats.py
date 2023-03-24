@@ -34,7 +34,8 @@ class StatCollector:
                     StatType.TX_NO_ROUTE,
                     StatType.QUERY_COUNT,
                     StatType.TX_FAIL_COUNT,
-                    StatType.CHANNELS_REOPEN_COUNT
+                    StatType.CHANNELS_REOPEN_COUNT,
+                    StatType.NETWORK_LATENCY,
                 ]:
                     self.stat_data[type.value] += value
                 elif type == StatType.CONFIG:
@@ -70,6 +71,7 @@ class StatCollector:
             StatType.QUERY_COUNT.value: 0,
             StatType.TX_FAIL_COUNT.value: 0,
             StatType.CHANNELS_REOPEN_COUNT.value: 0,
+            StatType.NETWORK_LATENCY.value: 0,
         }
 
     def start(self):
@@ -89,6 +91,9 @@ class StatCollector:
 
     def record_query(self, count):
         self.stat_q.put({"value": count, "type": StatType.QUERY_COUNT})
+
+    def record_network_latency(self, count):
+        self.stat_q.put({"value": count, "type": StatType.NETWORK_LATENCY})
 
     def record_tx_try(self):
         self.stat_q.put({"value": 1, "type": StatType.TX_TRY_COUNT})

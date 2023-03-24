@@ -50,15 +50,24 @@ class Network:
             balance += self.graph.get_edge_data(edge[0], edge[1])[AVAILABLE_SATS]
         return balance
 
-    def query_channel(self, src, dst):
-        self.sc.record_query(1)
-        edge = self.graph.get_edge_data(src, dst)
-        self.sc.record_rtt(self.query_rtts)
-        time.sleep(self.get_query_delay())
-        return edge
+    def query_channels(self, channels):
+        # We count all the queries as one latency since they are all done in parallel
+        query_delay = self.get_query_delay()
+        self.simulate_delay(query_delay/2)
+
+        self.sc.record_rtt(self.query_rtts * len(channels))
+        self.sc.record_query(len(channels))
+        response = []
+        for channel in channels:
+            src = channel[0]
+            dst = channel[1]
+            edge = self.graph.get_edge_data(src, dst)
+            response.append(edge)
+
+        self.simulate_delay(query_delay/2)
+        return response
 
     def get_query_delay(self):
-        delay_randomness_threshold = self.config[DELAY_RANDOMNESS_THRESHOLD]
         query_delay = self.query_delay * (
                 1+(self.rand.randint(-self.delay_randomness_threshold*100, self.delay_randomness_threshold*100) / 100)
         )
@@ -99,7 +108,7 @@ class Network:
                         edge[LOCKED_SATS] -= amount
                         edge[LOCK].release()
                         self.sc.record_rtt(self.tx_hop_rtts)
-                        time.sleep(self.get_hop_delay())
+                        self.simulate_delay(self.get_hop_delay())
                     self.sc.record_tx_fail()
                     return False, (route[i], route[i + 1])
             edge[LOCK].acquire()
@@ -107,7 +116,7 @@ class Network:
             edge[LOCKED_SATS] += amount
             edge[LOCK].release()
             self.sc.record_rtt(self.tx_hop_rtts)
-            time.sleep(self.get_hop_delay())
+            self.simulate_delay(self.get_hop_delay())
 
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
@@ -123,6 +132,10 @@ class Network:
         self.transactions_routed_from_last_reopen += 1
         self.sc.record_tx_success()
         return True, None
+
+    def simulate_delay(self, delay):
+        self.sc.record_network_latency(delay)
+        time.sleep(delay)
 
     def build_graph_from_config(self):
         seed = self.config[SEED]

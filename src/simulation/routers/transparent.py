@@ -21,12 +21,14 @@ class TransparentRouter(Router):
                 return []
             if len(route) == 0:
                 return []
-            for i in range(len(route) - 1):
-                if num_of_queries >= self.tx_max_query_per_tx_try:
-                    return []
-                num_of_queries += 1
-                edge = network.query_channel(route[i], route[i + 1])
-                if edge["available_sats"] < amount:
+
+            num_of_queries += len(route)
+            if num_of_queries >= self.tx_max_query_per_tx_try:
+                return []
+            edges = network.query_channels([[route[i], route[i + 1]] for i in range(len(route)-1)])
+
+            for i in range(len(edges)):
+                if edges[i]["available_sats"] < amount:
                     graph.remove_edge(route[i], route[i + 1])
                     route = []
                     break

@@ -16,8 +16,14 @@ nodes_num = 2
 channels_num = 76367 # For "path", "star", "complete", "balanced_tree" topologies, the number of channels will be ignored
 sats_min = 10 # Minimum amount of satoshies in each side of the channel
 sats_max = 10 # Maximum amount of satoshies in each side of the channel
-reopen = true # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
+reopen_enabled = false # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
 count_initial_channels_as_reopens = true # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
+delay_enabled = false # Enable network delays
+rtt_delay = 50 # Delay in milliseconds for each RTT
+delay_randomness_threshold = 0.3 # Delay randomness threshold, 0.3 means that the delay will be between 0.7 * rtt_delay and 1.3 * rtt_delay
+query_rtts = 1 # Number of RTTs for a query
+tx_hop_rtts = 3 # Number of RTTs for a transaction to proceed through a single hop
+
 
 [agents]
 seed = 1677085608
