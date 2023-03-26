@@ -55,8 +55,8 @@ class Network:
         query_delay = self.get_query_delay()
         self.simulate_delay(query_delay/2)
 
-        self.sc.record_rtt(self.query_rtts * len(channels))
-        self.sc.record_query(len(channels))
+        self.sc.record_rtt(self.query_rtts * math.ceil(len(channels) / 2))    # NOTE: We only need to query half of the nodes to get the balanced of all channels of the path
+        self.sc.record_query(math.ceil(len(channels) / 2))
         response = []
         for channel in channels:
             src = channel[0]

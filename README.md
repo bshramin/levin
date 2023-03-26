@@ -23,9 +23,7 @@ pipenv shell
 - [X] Run multiple times and average
 - [X] Decrease numbers to make debugging simpler
 - [X] count initial channel openning as reopenning
-- [ ] When do they decide to reopen a channel in the real network?
 - [ ] Read network data from file (https://bitcoin.stackexchange.com/a/88333/112612)
-- [ ] Upper bound for the real network
 
 
 ## Transparent TODO:
@@ -35,3 +33,4 @@ pipenv shell
 - [ ] Add multipath payment
 - [X] Add randomness to the delays
 - [X] Queries of a path get executed in parallel
+- [X] Only query half of the nodes in the path
