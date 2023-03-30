@@ -6,7 +6,6 @@ class TransparentRouter(Router):
     tx_max_query_per_tx_try = -1
     cache = {}  # IDEA: We can use caching for query API answers
 
-
     def __init__(self, tx_max_query_per_tx_try):
         self.tx_max_query_per_tx_try = tx_max_query_per_tx_try
 

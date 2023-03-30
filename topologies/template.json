@@ -1,0 +1,199 @@
+{
+    "nodes": [
+        {
+            "last_update": 0,
+            "pub_key": "02005dcac896582db30f259c17bba1849a9e1127f60d120ec7db69c17ce64d749d",
+            "alias": "",
+            "addresses": [
+            ],
+            "color": "#000000",
+            "features": {
+            }
+        },
+        {
+            "last_update": 0,
+            "pub_key": "02006b7be7ea4b7cdf181c5c7b338e80904f13173220eb07e991a268e518a35b4a",
+            "alias": "",
+            "addresses": [
+            ],
+            "color": "#000000",
+            "features": {
+            }
+        },
+        {
+            "last_update": 1558552181,
+            "pub_key": "02008955e7da2d42f4753fe462333f8c7207140368937131a3d28897a3fc83296d",
+            "alias": "Jmoney",
+            "addresses": [
+                {
+                    "network": "tcp",
+                    "addr": "76.126.108.70:9735"
+                }
+            ],
+            "color": "#68f442",
+            "features": {
+            }
+        },
+        {
+            "last_update": 1543000585,
+            "pub_key": "02009947c197575f5a948e1e4343c41dc2e6122a9bd644629afb919f30e1115ff8",
+            "alias": "LOUDMAESTRO",
+            "addresses": [
+            ],
+            "color": "#020099",
+            "features": {
+            }
+        },
+        {
+            "last_update": 1638036485,
+            "pub_key": "0200cf174ef5c6abbdd2f8ab87d1628c83a99a309266465e9c7cde14fb6d5882a9",
+            "alias": "Austronode",
+            "addresses": [
+                {
+                    "network": "tcp",
+                    "addr": "ey6mcl2jvpp74ftv6325ajkyvfna5bvtgac5svhjqbvfasesw3veghad.onion:9735"
+                }
+            ],
+            "color": "#68f442",
+            "features": {
+                "0": {
+                    "name": "data-loss-protect",
+                    "is_required": true,
+                    "is_known": true
+                },
+                "5": {
+                    "name": "upfront-shutdown-script",
+                    "is_required": false,
+                    "is_known": true
+                },
+                "7": {
+                    "name": "gossip-queries",
+                    "is_required": false,
+                    "is_known": true
+                },
+                "9": {
+                    "name": "tlv-onion",
+                    "is_required": false,
+                    "is_known": true
+                },
+                "12": {
+                    "name": "static-remote-key",
+                    "is_required": true,
+                    "is_known": true
+                },
+                "14": {
+                    "name": "payment-addr",
+                    "is_required": true,
+                    "is_known": true
+                },
+                "17": {
+                    "name": "multi-path-payments",
+                    "is_required": false,
+                    "is_known": true
+                },
+                "23": {
+                    "name": "anchors-zero-fee-htlc-tx",
+                    "is_required": false,
+                    "is_known": true
+                },
+                "31": {
+                    "name": "amp",
+                    "is_required": false,
+                    "is_known": true
+                }
+            }
+        }
+    ],
+    "edges": [
+        {
+            "channel_id": "553951550347608065",
+            "chan_point": "ede04f9cfc1bb5373fd07d8af9c9b8b5a85cfe5e323b7796eb0a4d0dce5d5058:1",
+            "last_update": 0,
+            "node1_pub": "03bd3466efd4a7306b539e2314e69efc6b1eaee29734fcedd78cf81b1dde9fedf8",
+            "node2_pub": "03c3d14714b78f03fd6ea4997c2b540a4139258249ea1d625c03b68bb82f85d0ea",
+            "capacity": "37200",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554317687705305088",
+            "chan_point": "cfd0ae79fc150c2c3c4068ceca74bc26652bb2691624379aba9e28b197a78d6a:0",
+            "last_update": 0,
+            "node1_pub": "02eccebd9ed98f6d267080a58194dbe554a2b33d976eb95bb7c116d00fd64c4a13",
+            "node2_pub": "02ee4469f2b686d5d02422917ac199602ce4c366a7bfaac1099e3ade377677064d",
+            "capacity": "1000000",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554460624201252865",
+            "chan_point": "c0a8d3428f562c232d86be399eb4497934e7e0390fa79e6860bcb65e7b0dd4fe:1",
+            "last_update": 0,
+            "node1_pub": "02eccebd9ed98f6d267080a58194dbe554a2b33d976eb95bb7c116d00fd64c4a13",
+            "node2_pub": "02ee4469f2b686d5d02422917ac199602ce4c366a7bfaac1099e3ade377677064d",
+            "capacity": "1000000",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554494709160148993",
+            "chan_point": "06bbac25ed610feb1d07316d1be8b8ba6850ee1dd96cc1d5439159bfe992be5a:1",
+            "last_update": 0,
+            "node1_pub": "03bd3466efd4a7306b539e2314e69efc6b1eaee29734fcedd78cf81b1dde9fedf8",
+            "node2_pub": "03cbf298b068300be33f06c947b9d3f00a0f0e8089da3233f5db37e81d3a596fe1",
+            "capacity": "200000",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554495808645955584",
+            "chan_point": "2392c45431c064269e4eaeccb0476ac32e56485d84e104064636aea896d1e439:0",
+            "last_update": 0,
+            "node1_pub": "022e74ed3ddd3f590fd6492e60b20dcad7303f17e1ffd882fb33bb3f6c88f64398",
+            "node2_pub": "02ee4469f2b686d5d02422917ac199602ce4c366a7bfaac1099e3ade377677064d",
+            "capacity": "2000000",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554502405657853952",
+            "chan_point": "1296ebdb80b7daf3409cf7ba0c847f44337b48e27fda54b94e4f159a19ce12fc:0",
+            "last_update": 0,
+            "node1_pub": "022e74ed3ddd3f590fd6492e60b20dcad7303f17e1ffd882fb33bb3f6c88f64398",
+            "node2_pub": "02eccebd9ed98f6d267080a58194dbe554a2b33d976eb95bb7c116d00fd64c4a13",
+            "capacity": "1000000",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554574973407920129",
+            "chan_point": "f18cdfd727d152b31800f2e4027eebdf5d0aef17927229a9fd9f49fd84bccd80:1",
+            "last_update": 0,
+            "node1_pub": "02eccebd9ed98f6d267080a58194dbe554a2b33d976eb95bb7c116d00fd64c4a13",
+            "node2_pub": "03cbf298b068300be33f06c947b9d3f00a0f0e8089da3233f5db37e81d3a596fe1",
+            "capacity": "64300",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554631048514043905",
+            "chan_point": "6aed56bf30e00bb7424519a365f66874d203ad2d3125f9268403e3f12e97c296:1",
+            "last_update": 0,
+            "node1_pub": "02ee4469f2b686d5d02422917ac199602ce4c366a7bfaac1099e3ade377677064d",
+            "node2_pub": "035f1498c929d4cefba4701ae36a554691f526ff60b1766badd5a49b3c8b68e1d8",
+            "capacity": "1000000",
+            "node1_policy": null,
+            "node2_policy": null
+        },
+        {
+            "channel_id": "554682725533417473",
+            "chan_point": "df26b4497c2176c1068ef0c42bd521ac82492f01a92d503a00f5d3863748c7e7:1",
+            "last_update": 0,
+            "node1_pub": "035f1498c929d4cefba4701ae36a554691f526ff60b1766badd5a49b3c8b68e1d8",
+            "node2_pub": "03cbf298b068300be33f06c947b9d3f00a0f0e8089da3233f5db37e81d3a596fe1",
+            "capacity": "80000",
+            "node1_policy": null,
+            "node2_policy": null
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 import networkx as nx
 from .router import Router
+from ..network import CAPACITY
 
 
 class ShortestPathRouter(Router):
@@ -20,7 +21,7 @@ class ShortestPathRouter(Router):
                 return []
             for i in range(len(route) - 1):
                 edge = graph.get_edge_data(route[i], route[i + 1])
-                if edge["full_channel_balance"] < amount:
+                if edge[CAPACITY] < amount:
                     graph.remove_edge(route[i], route[i + 1])
                     route = []
                     break

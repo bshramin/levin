@@ -1,15 +1,17 @@
+import json
 import math
 import time
 
 import networkx as nx
+from networkx.readwrite import json_graph
 from random import Random
 from threading import Lock
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
     TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, \
     DELAY_ENABLED, \
-    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD
+    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE
 
-FULL_CHANNEL_BALANCE = "full_channel_balance"
+CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
 AVAILABLE_SATS = "available_sats"
 LOCK = "lock"
@@ -53,7 +55,7 @@ class Network:
     def query_channels(self, channels):
         # We count all the queries as one latency since they are all done in parallel
         query_delay = self.get_query_delay()
-        self.simulate_delay(query_delay/2)
+        self.simulate_delay(query_delay / 2)
 
         self.sc.record_rtt(self.query_rtts * math.ceil(len(channels) / 2))    # NOTE: We only need to query half of the nodes to get the balanced of all channels of the path
         self.sc.record_query(math.ceil(len(channels) / 2))
@@ -64,18 +66,20 @@ class Network:
             edge = self.graph.get_edge_data(src, dst)
             response.append(edge)
 
-        self.simulate_delay(query_delay/2)
+        self.simulate_delay(query_delay / 2)
         return response
 
     def get_query_delay(self):
         query_delay = self.query_delay * (
-                1+(self.rand.randint(-self.delay_randomness_threshold*100, self.delay_randomness_threshold*100) / 100)
+                1 + (self.rand.randint(-self.delay_randomness_threshold * 100,
+                                       self.delay_randomness_threshold * 100) / 100)
         )
         return query_delay
 
     def get_hop_delay(self):
         hop_delay = self.hop_delay * (
-                1+(self.rand.randint(-self.delay_randomness_threshold*100, self.delay_randomness_threshold*100) / 100)
+                1 + (self.rand.randint(-self.delay_randomness_threshold * 100,
+                                       self.delay_randomness_threshold * 100) / 100)
         )
         return hop_delay
 
@@ -84,21 +88,22 @@ class Network:
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
             if edge[AVAILABLE_SATS] < amount:
-                if self.config[REOPEN_ENABLED] and amount < edge[FULL_CHANNEL_BALANCE] / 2:
+                if self.config[REOPEN_ENABLED] and amount < edge[CAPACITY] / 2:
                     reverse_of_edge = self.graph.get_edge_data(route[i + 1], route[i])
                     while edge[LOCKED_SATS] > 0 or reverse_of_edge[LOCKED_SATS] > 0:
                         pass
                     edge[LOCK].acquire()
                     reverse_of_edge[LOCK].acquire()
-                    edge[AVAILABLE_SATS] = edge[FULL_CHANNEL_BALANCE] / 2
-                    reverse_of_edge[AVAILABLE_SATS] = edge[FULL_CHANNEL_BALANCE] / 2
+                    edge[AVAILABLE_SATS] = edge[CAPACITY] / 2
+                    reverse_of_edge[AVAILABLE_SATS] = edge[CAPACITY] / 2
                     edge[LOCKED_SATS] = 0
                     reverse_of_edge[LOCKED_SATS] = 0
                     edge[LOCK].release()
                     reverse_of_edge[LOCK].release()
                     self.sc.record_channel_reopen()
-                    self.sc.record_rtt(self.tx_hop_rtts)   # NOTE: this is not accurate, we should have separate delay and RTT count for reopen
-                    self.l.log("REOPENED CHANNEL, Transactions between reopens: " + str(self.transactions_routed_from_last_reopen))
+                    self.sc.record_rtt(self.tx_hop_rtts)  # NOTE: not accurate, have different delay and RTT for reopen
+                    self.l.log("REOPENED CHANNEL, Transactions between reopens: " + str(
+                        self.transactions_routed_from_last_reopen))
                     self.transactions_routed_from_last_reopen = 0
                 else:
                     for j in range(0, i):
@@ -152,10 +157,10 @@ class Network:
             )
 
         i = 0
-        graph = self.build_undirected_graph_with_topology(topology, n, m, seed+i)
-        while not nx.is_connected(graph) or nx.number_of_selfloops(graph) != 0:
+        graph = self.build_undirected_graph_with_topology(topology, n, m, seed + i)
+        while not nx.is_connected(graph) or nx.number_of_selfloops(graph) != 0:     # Possible infinite loop
             i += 1
-            graph = self.build_undirected_graph_with_topology(topology, n, m, seed+i)
+            graph = self.build_undirected_graph_with_topology(topology, n, m, seed + i)
 
         if count_initial_channels_as_reopens:
             self.sc.record_channel_reopen(graph.number_of_edges())
@@ -164,16 +169,18 @@ class Network:
 
         return graph
 
-    def build_directed_graph_with_channel_balances_from_undirected_graph(self, graph, sats_min, sats_max):
-        edges = graph.edges()
+    def build_directed_graph_with_channel_balances_from_undirected_graph(self, base_graph, sats_min, sats_max):
+        edges = base_graph.edges()
         graph = nx.DiGraph()
         for edge in edges:
-            right_sats = self.rand.randint(sats_min, sats_max)
-            left_sats = self.rand.randint(sats_min, sats_max)
+            edge_data = base_graph.get_edge_data(edge[0], edge[1])
+            capacity = edge_data.get(CAPACITY, 0)
+            right_sats = math.ceil(capacity/2) or self.rand.randint(sats_min, sats_max)
+            left_sats = math.floor(capacity/2) or self.rand.randint(sats_min, sats_max)
             graph.add_edge(
                 edge[0],
                 edge[1],
-                full_channel_balance=right_sats + left_sats,
+                capacity=right_sats + left_sats,
                 available_sats=right_sats,
                 locked_sats=0,
                 lock=Lock(),
@@ -181,7 +188,7 @@ class Network:
             graph.add_edge(
                 edge[1],
                 edge[0],
-                full_channel_balance=right_sats + left_sats,
+                capacity=right_sats + left_sats,
                 available_sats=left_sats,
                 locked_sats=0,
                 lock=Lock(),
@@ -194,21 +201,52 @@ class Network:
         elif topology == TOPOLOGY_PATH:
             return nx.path_graph(n)
         elif topology == TOPOLOGY_STAR:
-            return nx.star_graph(n-1)   # n-1 because the center node is not counted
+            return nx.star_graph(n - 1)  # n-1 because the center node is not counted
         elif topology == TOPOLOGY_COMPLETE:
             raise NotImplementedError
+        elif topology == TOPOLOGY_FROM_FILE:
+            file_path = self.config[TOPOLOGY_FILE]
+            return self.load_graph_from_file(file_path)
         elif topology == TOPOLOGY_BALANCED_TREE:
             branching_factor = 2
             height = math.ceil(math.log2(n))
             graph = nx.balanced_tree(branching_factor, height)
-            if 2**height - 1 > n:
-                num_of_nodes_to_remove = 2**height - 1 - n
+            if 2 ** height - 1 > n:
+                num_of_nodes_to_remove = 2 ** height - 1 - n
                 leaf_nodes = [node for node in graph if nx.degree(graph, node) == 1]
                 nodes_to_remove = leaf_nodes[-num_of_nodes_to_remove:]
                 graph.remove_nodes_from(nodes_to_remove)
             return graph
         else:
             raise ValueError("Unknown topology: " + topology)
+
+    def load_graph_from_file(self, file_path):
+        f = open(file_path, 'r', encoding="utf8")
+        json_data = json.load(f)
+        f.close()
+
+        for item in json_data['edges']:
+            if item['capacity']:
+                item['capacity'] = int(item['capacity'])
+
+        graph = json_graph.node_link_graph(
+            json_data, False, False, {
+                'name': 'pub_key', 'source': 'node1_pub', 'target': 'node2_pub', 'key': 'channel_id', 'link': 'edges'
+            }
+        )
+
+        biggest_island_size = 0
+        islands = []
+        cc = nx.connected_components(graph)
+        for i, c in enumerate(cc):
+            biggest_island_size = max(biggest_island_size, len(c))
+            islands.append(c)
+
+        for island in islands:
+            if len(island) < biggest_island_size:
+                graph.remove_nodes_from(island)
+                self.l.log(f"Removing island with nodes: {island}")
+        return graph
 
     def dump(self):
         self.l.log("Dumping the network:")

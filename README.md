@@ -23,7 +23,7 @@ pipenv shell
 - [X] Run multiple times and average
 - [X] Decrease numbers to make debugging simpler
 - [X] count initial channel openning as reopenning
-- [ ] Read network data from file (https://bitcoin.stackexchange.com/a/88333/112612)
+- [X] Read network data from file
 
 
 ## Transparent TODO:
