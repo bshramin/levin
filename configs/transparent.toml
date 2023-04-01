@@ -1,6 +1,6 @@
 [simulation]
 num_of_rounds = 1 # Number of runs of the simulation, statistics will be averaged over all runs, rounds run concurrently
-num_of_agents = 5 # They work concurrently
+num_of_agents = 1 # They work concurrently
 
 [logging]
 enabled = false # Enable logging
@@ -9,16 +9,17 @@ enabled = false # Enable logging
 # You can use an exact number to reproduce the psoudo random results
 seed = 1677085608
 # All topologies will be connected with no self-loops
-# ["random", "star", "complete"]
+# ["random", "star", "complete", "path", "balanced_tree", "from_file"]
 # IDEA: add reading network topology from a file
-topology = "random"
+topology = "from_file"
+topology_file = "topologies/lngraph_2022_01_28__20_00.json" # File with the network topology, only used if topology = "from_file
 nodes_num = 10
 channels_num = 30
 sats_min = 3 # Minimum amount of satoshies in each side of the channel
 sats_max = 3 # Maximum amount of satoshies in each side of the channel
 reopen_enabled = false # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
 count_initial_channels_as_reopens = false # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
-delay_enabled = true # Enable network delays
+delay_enabled = false # Enable network delays
 rtt_delay = 50 # Delay in milliseconds for each RTT
 delay_randomness_threshold = 0.3 # Delay randomness threshold, 0.3 means that the delay will be between 0.7 * rtt_delay and 1.3 * rtt_delay
 query_rtts = 1 # Number of RTTs for a query
@@ -28,10 +29,10 @@ tx_hop_rtts = 3 # Number of RTTs for a transaction to proceed through a single h
 [agents]
 seed = 1677085608
 check_source_balance = true # Only choose source nodes with enough balance, set this to false only if reopening is enabled
-num_of_transactions = 100 # Total number of transactions a single agent will make
+num_of_transactions = 10000 # Total number of transactions a single agent will make
 tx_rest = 0 # Delay between transactions for each agent in seconds
-tx_amount_min = 1 # Minimum amount of satoshies in each transaction
-tx_amount_max = 1 # Maximum amount of satoshies in each transaction
+tx_amount_min = 35000 # Minimum amount of satoshies in each transaction
+tx_amount_max = 35000 # Maximum amount of satoshies in each transaction
 tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
 tx_max_query_per_tx_try = 30 # Maximum number of queries to find each route for a transaction, only for transparent network, it will reset on every route found
 routing_algorithm = "transparent" # ["shortest_path"]
