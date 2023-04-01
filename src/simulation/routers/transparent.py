@@ -1,5 +1,6 @@
 import networkx as nx
 from .router import Router
+from ..network import CAPACITY
 
 
 class TransparentRouter(Router):
@@ -21,9 +22,21 @@ class TransparentRouter(Router):
             if len(route) == 0:
                 return []
 
+            for i in range(len(route) - 1):
+                edge = graph.get_edge_data(route[i], route[i + 1])
+                if edge[CAPACITY] < amount:
+                    graph.remove_edge(route[i], route[i + 1])
+                    route = []
+                    break
+            if len(route) == 0:
+                continue
+
+            # TODO: we can only query the channels that have a probability of success less than a certain percentage
+
             num_of_queries += len(route)
             if num_of_queries >= self.tx_max_query_per_tx_try:
                 return []
+
             edges = network.query_channels([[route[i], route[i + 1]] for i in range(len(route)-1)])
 
             for i in range(len(edges)):
