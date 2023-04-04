@@ -7,13 +7,8 @@ from .consts import Status, ENABLED
 
 class Logger:
     def __init__(self, name, config):
-        if config[ENABLED] == False:
-            self.stop_request = True
-            self.enabled = False
-            self.status = Status.STOPPED
-            return
+        self.log_enabled = config[ENABLED]
         self.stop_request = False
-        self.enabled = True
         self.name = name
         self.log_q = Queue(maxsize=10000)
         self.open_log_file(name)
@@ -45,5 +40,8 @@ class Logger:
         thread.start()
 
     def log(self, message):
-        if self.enabled:
-            self.log_q.put(message)
+        if self.log_enabled:
+            self.log_q.put(str(message))
+
+    def metric(self, message):
+        self.log_q.put(str(message))

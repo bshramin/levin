@@ -62,6 +62,7 @@ class Simulator:
         self.sc.stop_request = True
 
         self.l.log("exit")
+        self.l.metric("exit")
         self.sc.dummy()
 
         while self.l.status != Status.STOPPED or self.sc.status != Status.STOPPED:

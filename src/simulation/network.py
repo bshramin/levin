@@ -1,5 +1,6 @@
 import json
 import math
+import statistics
 import time
 
 import networkx as nx
@@ -37,6 +38,7 @@ class Network:
         self.rand = Random(network_config[SEED])
         self.config = network_config
         self.graph = self.build_graph_from_config()
+        self.dump_graph_metrics()
         self.transactions_routed_from_last_reopen = 0
         self.query_rtts = self.config[QUERY_RTTS]
         self.tx_hop_rtts = self.config[TX_HOP_RTTS]
@@ -252,3 +254,18 @@ class Network:
         self.l.log("Dumping the network:")
         self.l.log("Nodes: " + str(self.graph.nodes()))
         self.l.log("Edges: " + str(self.graph.edges(data=True)))
+
+    def dump_graph_metrics(self):
+        edges = self.graph.edges(data=True)
+        capacities = [edge[2][CAPACITY] for edge in edges]
+
+        self.l.metric(
+            {
+                "capacities_avg": sum(capacities) / len(capacities),
+                "capacities_min": min(capacities),
+                "capacities_max": max(capacities),
+                "capacities_median": statistics.median(capacities),
+                "num_of_channels": len(edges),
+                "num_of_nodes": len(self.graph.nodes()),
+            }
+        )
