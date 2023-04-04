@@ -265,7 +265,7 @@ class Network:
                 "capacities_min": min(capacities),
                 "capacities_max": max(capacities),
                 "capacities_median": statistics.median(capacities),
-                "num_of_channels": len(edges),
+                "num_of_channels": len(edges) / 2,  # NOTE: Each channel is represented twice in the directed graph
                 "num_of_nodes": len(self.graph.nodes()),
             }
         )
