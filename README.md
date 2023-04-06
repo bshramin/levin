@@ -9,6 +9,15 @@ python3 src/main.py [TEMPLATE_NAME_1] [TEMPLATE_NAME_2] [TEMPLATE_NAME_3] ...
 ### Using Docker
 
 
+### Running on Microsoft Azure with Terraform
+```shell
+cd terraform
+terraform init
+terraform plan
+terraform apply --auto-approve
+```
+
+
 ## Development
 Use Pipenv to manage the virtual environment and dependencies.
 
@@ -16,6 +25,8 @@ Use Pipenv to manage the virtual environment and dependencies.
 ```bash
 pipenv shell
 ```
+
+
 
 ## Compression TODO:
 - [X] Add re-opening
