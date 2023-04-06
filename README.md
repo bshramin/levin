@@ -1,5 +1,7 @@
 
 # Levin
+Levin is a Lightning network simulator that can be used to evaluate
+the effect of changes to how the network is constructed, how payments are routed and the actions of nodes.
 
 ## Running Levin
 ```shell
