@@ -1,4 +1,5 @@
 import sys
+import os
 from time import sleep
 from simulation import Simulator, Status
 
@@ -19,27 +20,21 @@ if __name__ == "__main__":
 
     # User Commands
     while True:
-        print("Enter command (e)xit,(l)ist:")
-        command = input()
-        if command == "e" or command == "exit":
+        sleep(5)
+        running = False
+        os.system('clear')
+        for simulator in simulators:
+            if simulators[simulator].status != Status.STOPPED:
+                running = True
+            print("Simulator " + simulator + ": " + simulators[simulator].status.name)
+            for agent in simulators[simulator].agents:
+                print(
+                    "   Agent "
+                    + str(agent.id)
+                    + ": "
+                    + agent.status.name
+                    + ", transactions: "
+                    + str(agent.total_transactions)
+                )
+        if not running:
             break
-        if command == "l" or command == "list":
-            for simulator in simulators:
-                print("Simulator " + simulator + ": " + simulators[simulator].status.name)
-                for agent in simulators[simulator].agents:
-                    print(
-                        "   Agent "
-                        + str(agent.id)
-                        + ": "
-                        + agent.status.name
-                        + ", transactions: "
-                        + str(agent.total_transactions)
-                    )
-
-    # Stopping threads and ending the program
-
-    for simulator in simulators:
-        simulators[simulator].stop_request = True
-    for simulator in simulators:
-        while simulators[simulator].status != Status.STOPPED:
-            sleep(0.1)

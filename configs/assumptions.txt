@@ -1,5 +1,0 @@
-Bitcoin Price: 
-Average transaction amount ($): 
-Average transaction amount (sats): 
-Average channel balance (sats):
-Each hop RTTs: 
