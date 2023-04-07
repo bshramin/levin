@@ -1,9 +1,10 @@
 import hashlib
 from copy import deepcopy
+from queue import Empty
 
 import toml
 from time import sleep
-from threading import Thread
+from multiprocessing import Process, Manager
 from .consts import Status, LOGGING_CONFIG, AGENT_CONFIG, NUM_OF_AGENTS, NETWORK_CONFIG, SIMULATION_CONFIG, \
     NUM_OF_ROUNDS, SEED
 from .network import Network
@@ -13,24 +14,29 @@ from .stats import StatCollector
 
 
 class Simulator:
-    def __init__(self, name):
+    def __init__(self, name, control_queue):
+        self.manager = Manager()
+        self.control_queue = control_queue
+        self.log_control_queue = self.manager.Queue()
+        self.stats_control_queue = self.manager.Queue()
         self.config = None
         self.stop_request = False
         self.name = name
         self.num_of_rounds = None
         self.num_of_agents = None
         self.read_config()
-        self.l = Logger(name, self.config[LOGGING_CONFIG])  # TODO: currently no way to distinguish rounds from each other
+        self.l = Logger(name, self.config[LOGGING_CONFIG], self.log_control_queue)
         self.l.log(
             "Config read: \n"
             + str(self.config)
             + "\n********** end of config dump **********"
         )
-        self.sc = StatCollector(name, self.l, self.num_of_rounds)
+        self.sc = StatCollector(name, self.l, self.num_of_rounds, self.stats_control_queue)
         self.sc.record_config(self.config)
         self.agents = []
         self.networks = []
         self.status = Status.WAITING
+        self.agent_queue = self.manager.Queue()
 
     def read_config(self):
         full_path = "configs/" + self.name + ".toml"
@@ -42,31 +48,21 @@ class Simulator:
         self.l.log("Generating " + str(self.num_of_agents) + " agents.")
         for i in range(self.num_of_agents):
             self.agents.append(
-                Agent(self.name, i, self.l, self.sc, network, agents_config)
+                Agent(self.name, i, self.l, self.sc, network, agents_config, self.agent_queue)
             )
 
     def start_agents(self):
         for agent in self.agents:
             agent.start()
 
-    def stop_agents(self):
-        for agent in self.agents:
-            agent.stop_request = True
-
-        for agent in self.agents:
-            while agent.status != Status.STOPPED:
-                sleep(0.1)
-
     def stop_logger_and_stat_collector(self):
-        self.l.stop_request = True
-        self.sc.stop_request = True
+        self.log_control_queue.put("exit")
+        sleep(1)
+        self.log_control_queue.get()
 
-        self.l.log("exit")
-        self.l.metric("exit")
-        self.sc.dummy()
-
-        while self.l.status != Status.STOPPED or self.sc.status != Status.STOPPED:
-            sleep(0.1)
+        self.stats_control_queue.put("exit")
+        sleep(1)
+        self.stats_control_queue.get()
 
     def run(self):
         self.status = Status.RUNNING
@@ -85,19 +81,25 @@ class Simulator:
 
         self.l.log("Starting the simulation.")
         self.start_agents()
-
+        done_agents_num = 0
         while not self.stop_request:
-            if Status.RUNNING not in [agent.status for agent in self.agents]:
-                break
-            sleep(0.1)
+            try:
+                line = self.agent_queue.get_nowait()
+                if line == "done":
+                    done_agents_num += 1
+            except Empty:
+                pass
+            if done_agents_num == len(self.agents):
+                self.stop_request = True
+            sleep(1)
 
         self.stop_request = True
-        self.stop_agents()
         self.l.log("Stopping the simulation.")
         self.stop_logger_and_stat_collector()
+        self.control_queue.put("done")
         print("Simulator " + self.name + " stopped.")
         self.status = Status.STOPPED
 
     def start(self):
-        thread = Thread(target=self.run)
-        thread.start()
+        p = Process(target=self.run)
+        p.start()

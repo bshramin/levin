@@ -1,4 +1,4 @@
-from threading import Thread
+from multiprocessing import Process
 from time import sleep
 from .consts import (
     Status,
@@ -16,7 +16,8 @@ from .routers import ShortestPathRouter, TransparentRouter
 
 
 class Agent:
-    def __init__(self, task_name, id, logger, stats_collector, network, config):
+    def __init__(self, task_name, id, logger, stats_collector, network, config, control_queue):
+        self.control_queue = control_queue
         self.stop_request = False
         self.task_name = task_name
         self.id = id
@@ -90,9 +91,10 @@ class Agent:
                 break
         self.log("stopped")
         self.status = Status.STOPPED
+        self.control_queue.put("done")
 
     def start(self):
-        thread = Thread(target=self.run)
+        thread = Process(target=self.run)
         thread.start()
 
     def log(self, msg):
