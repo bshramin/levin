@@ -11,7 +11,7 @@ class StatCollector:
         self.name = name
         self.l = logger
         self.num_of_rounds = num_of_rounds
-        self.stat_q = Queue(maxsize=10000)
+        self.stat_q = Queue(maxsize=100000000)
         self.stat_data = None
         self.initialize_data()
         self.status = Status.WAITING
