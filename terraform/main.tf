@@ -57,7 +57,7 @@ resource "azurerm_virtual_machine" "levin" {
   location                      = "Canada Central"
   resource_group_name           = "testing-tenancy"
   network_interface_ids         = [azurerm_network_interface.levin.id]
-  vm_size                       = "Standard_DS1_v2" # TODO: change to a machine with more cpus
+  vm_size                       = "Standard_F72s_v2"
   delete_os_disk_on_termination = true
 
   storage_image_reference {
