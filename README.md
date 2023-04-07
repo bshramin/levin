@@ -12,11 +12,12 @@ python3 src/main.py [TEMPLATE_NAME_1] [TEMPLATE_NAME_2] [TEMPLATE_NAME_3] ...
 
 
 ### Running on Microsoft Azure with Terraform
+This project is capable of automatically deploying Levin to Microsoft Azure using Terraform.
+It will then upload the code to the VM and run it. After the simulation is completed it will download the results.
+And finally it will destroy the VM and all the resources created on Azure.
 ```shell
 cd terraform
-terraform init
-terraform plan
-terraform apply --auto-approve
+bash run.sh
 ```
 
 
