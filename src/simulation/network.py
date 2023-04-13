@@ -227,15 +227,11 @@ class Network:
         json_data = json.load(f)
         f.close()
 
-        for item in json_data['edges']:
-            if item['capacity']:
-                item['capacity'] = int(item['capacity'])
+        graph = nx.Graph()
 
-        graph = json_graph.node_link_graph(
-            json_data, False, False, {
-                'name': 'pub_key', 'source': 'node1_pub', 'target': 'node2_pub', 'key': 'channel_id', 'link': 'edges'
-            }
-        )
+        for channel in json_data['channels']:
+            graph.add_edge(
+                channel['source'], channel['destination'], key=channel['short_channel_id'], capacity=channel['satoshis'])
 
         biggest_island_size = 0
         islands = []
@@ -258,7 +254,7 @@ class Network:
     def dump_graph_metrics(self):
         edges = self.graph.edges(data=True)
         capacities = [edge[2][CAPACITY] for edge in edges]
-
+        self.dump()
         self.l.metric(
             {
                 "capacities_avg": sum(capacities) / len(capacities),
