@@ -44,7 +44,7 @@ class Agent:
     def send_transaction(self):
         src, dst = self.choose_src_and_dst()
         amount = self.choose_amount()
-        while self.config[CHECK_SOURCE_BALANCE] and self.network.get_total_balance(src) < amount:
+        while self.config[CHECK_SOURCE_BALANCE] and self.network.get_max_available_sats(src) < amount:
             self.log(f"sending {amount} sats from {src}, not enough balance, choosing new src and dst")
             src, dst = self.choose_src_and_dst()
             amount = self.choose_amount()
