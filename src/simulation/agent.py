@@ -56,7 +56,7 @@ class Agent:
         error_edges = []
         routes_tried = 0
         while not is_success and routes_tried <= self.config[TX_MAX_ROUTE_TRIES]:
-            route = self.router.find_route(
+            route, error_edges = self.router.find_route(
                 self.network, src, dst, amount, error_edges
             )
             if len(route) == 0:

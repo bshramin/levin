@@ -16,14 +16,17 @@ class ShortestPathRouter(Router):
             try:
                 route = nx.shortest_path(graph, src, dst)
             except nx.NetworkXNoPath:
-                return []
+                return [], failed_edges
             if len(route) == 0:
-                return []
-            for i in range(len(route) - 1):
-                edge = graph.get_edge_data(route[i], route[i + 1])
+                return [], failed_edges
+
+            temp_route = route
+            for i in range(len(temp_route) - 1):
+                edge = graph.get_edge_data(temp_route[i], temp_route[i + 1])
                 if edge[CAPACITY] < amount:
-                    graph.remove_edge(route[i], route[i + 1])
+                    graph.remove_edge(temp_route[i], temp_route[i + 1])
+                    failed_edges.append([temp_route[i], temp_route[i + 1]])
                     route = []
-                    break
+
             if len(route) > 0:
-                return route
+                return route, failed_edges
