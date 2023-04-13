@@ -2,3 +2,8 @@ rm -rf logs/*
 rm -rf stats/*
 rm -rf terraform/project_zips/*.zip
 rm -rf terraform/simulation_results/*
+rm -rf terraform/.terraform
+rm -rf terraform/.terraform.lock.hcl
+rm -rf terraform/.terraform.tfstate.lock.info
+rm -rf terraform/terraform.tfstate
+rm -rf terraform/terraform.tfstate.backup
