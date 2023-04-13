@@ -54,9 +54,16 @@ class Network:
             balance += self.graph.get_edge_data(edge[0], edge[1])[AVAILABLE_SATS]
         return balance
 
-    def get_max_available_sats(self, node):
+    def get_max_available_out_sats(self, node):
         max_available_sats = 0
         edges = self.graph.out_edges(node)
+        for edge in edges:
+            max_available_sats = max(max_available_sats, self.graph.get_edge_data(edge[0], edge[1])[AVAILABLE_SATS])
+        return max_available_sats
+
+    def get_max_available_in_sats(self, node):
+        max_available_sats = 0
+        edges = self.graph.in_edges(node)
         for edge in edges:
             max_available_sats = max(max_available_sats, self.graph.get_edge_data(edge[0], edge[1])[AVAILABLE_SATS])
         return max_available_sats
