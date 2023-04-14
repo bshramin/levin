@@ -10,7 +10,8 @@ from threading import Lock
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
     TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, \
     DELAY_ENABLED, \
-    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE
+    RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
+    OVERWRITE_BALANCES
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -191,8 +192,8 @@ class Network:
         for edge in edges:
             edge_data = base_graph.get_edge_data(edge[0], edge[1])
             capacity = edge_data.get(CAPACITY, 0)
-            right_sats = math.ceil(capacity/2) or self.rand.randint(sats_min, sats_max)
-            left_sats = math.floor(capacity/2) or self.rand.randint(sats_min, sats_max)
+            right_sats = math.ceil(capacity/2) if (capacity and not self.config[OVERWRITE_BALANCES]) else self.rand.randint(sats_min, sats_max)
+            left_sats = math.floor(capacity/2) if (capacity and not self.config[OVERWRITE_BALANCES]) else self.rand.randint(sats_min, sats_max)
             graph.add_edge(
                 edge[0],
                 edge[1],
