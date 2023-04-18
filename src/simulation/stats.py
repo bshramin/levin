@@ -1,5 +1,6 @@
 import os
 import time
+from copy import deepcopy
 from datetime import datetime
 from multiprocessing import Process, Manager
 from queue import Empty
@@ -40,6 +41,8 @@ class StatCollector:
                 last_print = time.time()
                 print("=========================================")
                 print(self.name)
+                to_print = deepcopy(self.stat_data)
+                del to_print[StatType.CONFIG.value]
                 print(self.stat_data)
 
             try:
