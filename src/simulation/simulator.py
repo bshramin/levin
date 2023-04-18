@@ -6,7 +6,7 @@ import toml
 from time import sleep
 from multiprocessing import Process, Manager
 from .consts import Status, LOGGING_CONFIG, AGENT_CONFIG, NUM_OF_AGENTS, NETWORK_CONFIG, SIMULATION_CONFIG, \
-    NUM_OF_ROUNDS, SEED
+    NUM_OF_ROUNDS, SEED, PRINT_INTERVAL
 from .network import Network
 from .agent import Agent
 from .logger import Logger
@@ -31,7 +31,8 @@ class Simulator:
             + str(self.config)
             + "\n********** end of config dump **********"
         )
-        self.sc = StatCollector(name, self.l, self.num_of_rounds, self.stats_control_queue)
+        print_interval = self.config[LOGGING_CONFIG][PRINT_INTERVAL]
+        self.sc = StatCollector(name, self.l, self.num_of_rounds, print_interval, self.stats_control_queue)
         self.sc.record_config(self.config)
         self.agents = []
         self.networks = []

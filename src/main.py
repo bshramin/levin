@@ -34,18 +34,18 @@ if __name__ == "__main__":
             pass
         if done_simulators_num == len(simulators):
             break
-        for simulator in simulators:
-            if simulators[simulator].status != Status.STOPPED:
-                running = True
-            print("Simulator " + simulator + ": " + simulators[simulator].status.name)
-            for agent in simulators[simulator].agents:
-                print(
-                    "   Agent "
-                    + str(agent.id)
-                    + ": "
-                    + agent.status.name
-                    + ", transactions: "
-                    + str(agent.total_transactions)
-                )
+        # for simulator in simulators:
+        #     if simulators[simulator].status != Status.STOPPED:
+        #         running = True
+        #     print("Simulator " + simulator + ": " + simulators[simulator].status.name)
+        #     for agent in simulators[simulator].agents:
+        #         print(
+        #             "   Agent "
+        #             + str(agent.id)
+        #             + ": "
+        #             + agent.status.name
+        #             + ", transactions: "
+        #             + str(agent.total_transactions)
+        #         )
 
     print("All simulators finished.")

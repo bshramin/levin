@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 from multiprocessing import Process, Manager
 from queue import Empty
@@ -7,7 +8,8 @@ from simulation.consts import Status, StatType
 
 
 class StatCollector:
-    def __init__(self, name, logger, num_of_rounds, control_queue):
+    def __init__(self, name, logger, num_of_rounds, print_interval, control_queue):
+        self.print_interval = print_interval
         self.control_queue = control_queue
         self.stop_request = False
         self.name = name
@@ -24,6 +26,7 @@ class StatCollector:
     def run(self):
         #  There is only one instance running per simulation config so no need for locks
         self.status = Status.RUNNING
+        last_print = time.time()
         while not self.stop_request or not self.stat_q.empty():
             try:
                 if not self.stop_request:
@@ -32,6 +35,12 @@ class StatCollector:
                         self.stop_request = True
             except Empty:
                 pass
+
+            if time.time() - last_print > self.print_interval:
+                last_print = time.time()
+                print("=========================================")
+                print(self.name)
+                print(self.stat_data)
 
             try:
                 stat = self.stat_q.get_nowait()

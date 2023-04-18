@@ -31,6 +31,7 @@ NUM_OF_AGENTS = "num_of_agents"
 # Logging
 LOGGING_CONFIG = "logging"
 ENABLED = "enabled"
+PRINT_INTERVAL = "print_interval"
 
 # Network
 NETWORK_CONFIG = "network"
