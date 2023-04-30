@@ -1,9 +1,9 @@
 import sys
-from queue import Empty
 from multiprocessing import Manager
+from queue import Empty
 from time import sleep
-from simulation import Simulator, Status
 
+from simulation import Simulator
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -13,25 +13,33 @@ if __name__ == "__main__":
     names = sys.argv[1:]
 
     manager = Manager()
-    q = manager.Queue()
+    control_queue = manager.Queue(maxsize=100)
+    stdout_q = manager.Queue(maxsize=1000)
     # Simulators
     simulators = {}
     for name in names:
-        simulator = Simulator(name, q)
+        simulator = Simulator(name, control_queue, stdout_q)
         simulator.start()
         simulators[name] = simulator
 
     done_simulators_num = 0
     # User Commands
     while True:
-        sleep(10)
-
         try:
-            line = q.get_nowait()
+            line = control_queue.get_nowait()
             if line == "done":
                 done_simulators_num += 1
         except Empty:
             pass
+
+        try:
+            line = stdout_q.get_nowait()
+            if line:
+                print(line)
+        except Empty:
+            sleep(1)
+            pass
+
         if done_simulators_num == len(simulators):
             break
         # for simulator in simulators:

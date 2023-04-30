@@ -1,21 +1,23 @@
 import hashlib
 from copy import deepcopy
+from multiprocessing import Process, Manager
 from queue import Empty
+from time import sleep
 
 import toml
-from time import sleep
-from multiprocessing import Process, Manager
+
+from .agent import Agent
 from .consts import Status, LOGGING_CONFIG, AGENT_CONFIG, NUM_OF_AGENTS, NETWORK_CONFIG, SIMULATION_CONFIG, \
     NUM_OF_ROUNDS, SEED, PRINT_INTERVAL
-from .network import Network
-from .agent import Agent
 from .logger import Logger
+from .network import Network
 from .stats import StatCollector
 
 
 class Simulator:
-    def __init__(self, name, control_queue):
+    def __init__(self, name, control_queue, stdout_q):
         self.manager = Manager()
+        self.stdout_q = stdout_q
         self.control_queue = control_queue
         self.log_control_queue = self.manager.Queue()
         self.stats_control_queue = self.manager.Queue()
@@ -32,7 +34,8 @@ class Simulator:
             + "\n********** end of config dump **********"
         )
         print_interval = self.config[LOGGING_CONFIG][PRINT_INTERVAL]
-        self.sc = StatCollector(name, self.l, self.num_of_rounds, print_interval, self.stats_control_queue)
+        self.sc = StatCollector(name, self.l, self.num_of_rounds, print_interval, self.stats_control_queue,
+                                self.stdout_q)
         self.sc.record_config(self.config)
         self.agents = []
         self.networks = []
@@ -73,8 +76,8 @@ class Simulator:
         network_config = deepcopy(self.config[NETWORK_CONFIG])
         agents_config = deepcopy(self.config[AGENT_CONFIG])
         for i in range(num_of_rounds):
-            network_config[SEED] = (2**32 - 1) & int(hashlib.sha256(bytes(network_config[SEED])).hexdigest(), base=16)
-            agents_config[SEED] = (2**32 - 1) & int(hashlib.sha256(bytes(agents_config[SEED])).hexdigest(), base=16)
+            network_config[SEED] = (2 ** 32 - 1) & int(hashlib.sha256(bytes(network_config[SEED])).hexdigest(), base=16)
+            agents_config[SEED] = (2 ** 32 - 1) & int(hashlib.sha256(bytes(agents_config[SEED])).hexdigest(), base=16)
             self.networks.append(Network(self.name, self.l, self.sc, network_config))
             # self.networks[i].dump()
             self.generate_agents(self.networks[i], agents_config)

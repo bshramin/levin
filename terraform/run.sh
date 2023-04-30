@@ -1,5 +1,5 @@
 # Prepare the environment and variables
-CONFIG_FILES_TO_RUN="transparent private"
+CONFIG_FILES_TO_RUN="from_file"
 SSH_PUBLIC_KEY="$HOME/.ssh/id_rsa.pub"
 SSH_PRIVATE_KEY="$HOME/.ssh/id_rsa"
 VARIABLES="ssh_pub_key=$(cat "$SSH_PUBLIC_KEY")"
@@ -17,7 +17,7 @@ sleep 2
 ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" levin@"$VM_PUBLIC_IP" "rm -rf *"
 scp -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" "$ZIP_FILE" levin@"$VM_PUBLIC_IP":~/levin.zip
 ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" levin@"$VM_PUBLIC_IP" "sudo apt update; sudo apt install zip unzip python3-pip -y; pip3 install --user pipenv"
-ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" levin@"$VM_PUBLIC_IP" "unzip -o levin.zip; sh clean.sh; python3 -m pipenv install; python3 -m pipenv run python3 src/main.py $CONFIG_FILES_TO_RUN"
+ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" levin@"$VM_PUBLIC_IP" "unzip -o levin.zip; sh clean.sh; pip3 install -r requirements.txt; python3 src/main.py $CONFIG_FILES_TO_RUN"
 scp -r -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" levin@"$VM_PUBLIC_IP":~/stats/ ./simulation_results/
 scp -r -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" levin@"$VM_PUBLIC_IP":~/logs/ ./simulation_results/
 

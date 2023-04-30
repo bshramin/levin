@@ -9,7 +9,8 @@ from simulation.consts import Status, StatType
 
 
 class StatCollector:
-    def __init__(self, name, logger, num_of_rounds, print_interval, control_queue):
+    def __init__(self, name, logger, num_of_rounds, print_interval, control_queue, stdout_q):
+        self.stdout_q = stdout_q
         self.print_interval = print_interval
         self.control_queue = control_queue
         self.stop_request = False
@@ -39,11 +40,13 @@ class StatCollector:
 
             if time.time() - last_print > self.print_interval:
                 last_print = time.time()
-                print("=========================================")
-                print(self.name)
                 to_print = deepcopy(self.stat_data)
                 del to_print[StatType.CONFIG.value]
-                print(self.stat_data)
+                self.stdout_q.put(
+                    f"=========================================\n"
+                    f"Stats for {self.name}\n"
+                    f"{str(to_print)}\n"
+                )
 
             try:
                 stat = self.stat_q.get_nowait()
