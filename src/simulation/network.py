@@ -2,16 +2,16 @@ import json
 import math
 import statistics
 import time
-
-import networkx as nx
-from networkx.readwrite import json_graph
 from random import Random
 from threading import Lock
+
+import networkx as nx
+
 from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY, TOPOLOGY_RANDOM, TOPOLOGY_PATH, \
     TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, \
     DELAY_ENABLED, \
     RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
-    OVERWRITE_BALANCES
+    OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -74,7 +74,8 @@ class Network:
         query_delay = self.get_query_delay()
         self.simulate_delay(query_delay / 2)
 
-        self.sc.record_rtt(self.query_rtts * math.ceil(len(channels) / 2))    # NOTE: We only need to query half of the nodes to get the balanced of all channels of the path
+        self.sc.record_rtt(self.query_rtts * math.ceil(
+            len(channels) / 2))  # NOTE: We only need to query half of the nodes to get the balanced of all channels of the path
         self.sc.record_query(math.ceil(len(channels) / 2))
         response = []
         for channel in channels:
@@ -175,7 +176,7 @@ class Network:
 
         i = 0
         graph = self.build_undirected_graph_with_topology(topology, n, m, seed + i)
-        while not nx.is_connected(graph) or nx.number_of_selfloops(graph) != 0:     # Possible infinite loop
+        while not nx.is_connected(graph) or nx.number_of_selfloops(graph) != 0:  # Possible infinite loop
             i += 1
             graph = self.build_undirected_graph_with_topology(topology, n, m, seed + i)
 
@@ -192,8 +193,20 @@ class Network:
         for edge in edges:
             edge_data = base_graph.get_edge_data(edge[0], edge[1])
             capacity = edge_data.get(CAPACITY, 0)
-            right_sats = math.ceil(capacity/2) if (capacity and not self.config[OVERWRITE_BALANCES]) else self.rand.randint(sats_min, sats_max)
-            left_sats = math.floor(capacity/2) if (capacity and not self.config[OVERWRITE_BALANCES]) else self.rand.randint(sats_min, sats_max)
+            right_sats = 0
+            left_sats = 0
+            if capacity and not self.config[OVERWRITE_BALANCES]:
+                if self.config[CAPACITY_DISTRIBUTION] == DISTRIBUTION_HALF:
+                    right_sats = math.ceil(capacity / 2)
+                    left_sats = math.floor(capacity / 2)
+                elif self.config[CAPACITY_DISTRIBUTION] == DISTRIBUTION_RANDOM:
+                    r = self.rand.random()
+                    right_sats = math.ceil(capacity * r)
+                    left_sats = math.floor(capacity * (1 - r))
+            else:
+                right_sats = self.rand.randint(sats_min, sats_max)
+                left_sats = self.rand.randint(sats_min, sats_max)
+
             graph.add_edge(
                 edge[0],
                 edge[1],
@@ -246,7 +259,8 @@ class Network:
 
         for channel in json_data['channels']:
             graph.add_edge(
-                channel['source'], channel['destination'], key=channel['short_channel_id'], capacity=channel['satoshis'])
+                channel['source'], channel['destination'], key=channel['short_channel_id'],
+                capacity=channel['satoshis'])
 
         biggest_island_size = 0
         islands = []

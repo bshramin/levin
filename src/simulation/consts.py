@@ -40,6 +40,9 @@ TOPOLOGY = "topology"
 TOPOLOGY_FROM_FILE = "from_file"
 TOPOLOGY_FILE = "topology_file"
 OVERWRITE_BALANCES = "overwrite_balances"
+CAPACITY_DISTRIBUTION = "capacity_distribution"
+DISTRIBUTION_HALF = "half"
+DISTRIBUTION_RANDOM = "random"
 TOPOLOGY_RANDOM = "random"
 TOPOLOGY_PATH = "path"
 TOPOLOGY_STAR = "star"
@@ -56,7 +59,6 @@ RTT_DELAY = "rtt_delay"
 DELAY_RANDOMNESS_THRESHOLD = "delay_randomness_threshold"
 QUERY_RTTS = "query_rtts"
 TX_HOP_RTTS = "tx_hop_rtts"
-
 
 # Agents
 AGENT_CONFIG = "agents"

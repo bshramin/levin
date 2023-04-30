@@ -3,7 +3,7 @@ num_of_rounds = 1 # Number of runs of the simulation, statistics will be average
 num_of_agents = 1 # They work concurrently
 
 [logging]
-enabled = false # Enable logging
+enabled = true # Enable logging
 print_interval = 5 # Print statistics every print_interval seconds for each simulation round, print is enabled anyway even if logging is disabled
 
 [network]
@@ -13,10 +13,11 @@ seed = 1677085608
 # ["random", "star", "complete", "path", "balanced_tree", "from_file"]
 # IDEA: add reading network topology from a file
 topology = "from_file"
-topology_file = "topologies/t1pn_graph_test.json" # File with the network topology, only used if topology = "from_file
-overwrite_balances = true # Overwrite balances in the topology file with random values with below config
-nodes_num = 0
+topology_file = "topologies/t1pn_graph.json" # File with the network topology, only used if topology = "from_file
+overwrite_balances = false # Overwrite balances in the topology file with random values with below config
+nodes_num = 0 # Has no affect if topology = "from_file"
 channels_num = 0 # Only effective for "random" topology
+capacity_distribution = "random"  # "half" (50-50), "random" (uniform random)
 sats_min = 3 # Minimum amount of satoshies in each side of the channel
 sats_max = 3 # Maximum amount of satoshies in each side of the channel
 reopen_enabled = true # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
@@ -30,7 +31,7 @@ tx_hop_rtts = 0 # Number of RTTs for a transaction to proceed through a single h
 [agents]
 seed = 1677085608
 check_source_balance = false # Only choose source nodes with enough balance, set this to false only if reopening is enabled
-num_of_transactions = 100000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+num_of_transactions = 100 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 1 # Minimum amount of satoshies in each transaction
 tx_amount_max = 1 # Maximum amount of satoshies in each transaction
