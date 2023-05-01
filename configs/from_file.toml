@@ -20,6 +20,7 @@ channels_num = 0 # Only effective for "random" topology
 capacity_distribution = "random"  # "half" (50-50), "random" (uniform random)
 sats_min = 3 # Minimum amount of satoshies in each side of the channel
 sats_max = 3 # Maximum amount of satoshies in each side of the channel
+saturation_probability = 0.2 # The probability of a channel being saturated,range [0,1]
 reopen_enabled = true # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
 count_initial_channels_as_reopens = true # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
 delay_enabled = false # Enable network delays

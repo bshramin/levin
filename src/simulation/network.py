@@ -11,7 +11,7 @@ from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY,
     TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, \
     DELAY_ENABLED, \
     RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
-    OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM
+    OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM, SATURATION_PROBABILITY
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -206,6 +206,15 @@ class Network:
             else:
                 right_sats = self.rand.randint(sats_min, sats_max)
                 left_sats = self.rand.randint(sats_min, sats_max)
+
+            saturaton = self.rand.random()
+            if saturaton < self.config[SATURATION_PROBABILITY]:
+                if saturaton < self.config[SATURATION_PROBABILITY] / 2:
+                    right_sats = 0
+                    left_sats += right_sats
+                else:
+                    left_sats = 0
+                    right_sats += left_sats
 
             graph.add_edge(
                 edge[0],
