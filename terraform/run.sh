@@ -1,5 +1,5 @@
 # Prepare the environment and variables
-CONFIG_FILES_TO_RUN="from_file"
+CONFIG_FILES_TO_RUN="grid"
 SSH_PUBLIC_KEY="$HOME/.ssh/id_rsa.pub"
 SSH_PRIVATE_KEY="$HOME/.ssh/id_rsa"
 VARIABLES="ssh_pub_key=$(cat "$SSH_PUBLIC_KEY")"

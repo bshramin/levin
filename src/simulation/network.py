@@ -11,7 +11,8 @@ from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY,
     TOPOLOGY_STAR, TOPOLOGY_COMPLETE, TOPOLOGY_BALANCED_TREE, REOPEN_ENABLED, COUNT_INITIAL_CHANNELS_AS_REOPENS, \
     DELAY_ENABLED, \
     RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
-    OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM, SATURATION_PROBABILITY
+    OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM, SATURATION_PROBABILITY, \
+    TOPOLOGY_2D_GRID
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -169,7 +170,7 @@ class Network:
         topology = self.config[TOPOLOGY]
         count_initial_channels_as_reopens = self.config[COUNT_INITIAL_CHANNELS_AS_REOPENS]
 
-        if m < n - 1:
+        if m < n - 1 and topology in [TOPOLOGY_RANDOM]:
             raise ValueError(
                 "The number of channels must be at least n-1 for the graph to be connected."
             )
@@ -241,6 +242,11 @@ class Network:
             return nx.path_graph(n)
         elif topology == TOPOLOGY_STAR:
             return nx.star_graph(n - 1)  # n-1 because the center node is not counted
+        elif topology == TOPOLOGY_2D_GRID:
+            length = math.ceil(math.sqrt(n))
+            if length ** 2 != n:
+                raise ValueError("The number of nodes must be a square number for the 2D grid topology.")
+            return nx.grid_graph(dim=(length, length, 1))
         elif topology == TOPOLOGY_COMPLETE:
             raise NotImplementedError
         elif topology == TOPOLOGY_FROM_FILE:
