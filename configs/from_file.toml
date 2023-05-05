@@ -1,10 +1,10 @@
 [simulation]
 num_of_rounds = 1 # Number of runs of the simulation, statistics will be averaged over all runs, rounds run concurrently
-num_of_agents = 1 # They work concurrently
+num_of_agents = 100 # They work concurrently
 
 [logging]
-enabled = true # Enable logging
-print_interval = 5 # Print statistics every print_interval seconds for each simulation round, print is enabled anyway even if logging is disabled
+enabled = false # Enable logging
+print_interval = 30 # Print statistics every print_interval seconds for each simulation round, print is enabled anyway even if logging is disabled
 
 [network]
 # You can use an exact number to reproduce the psoudo random results
@@ -13,14 +13,14 @@ seed = 1677085608
 # ["random", "star", "complete", "path", "balanced_tree", "from_file"]
 # IDEA: add reading network topology from a file
 topology = "from_file"
-topology_file = "topologies/t1pn_graph.json" # File with the network topology, only used if topology = "from_file
+topology_file = "topologies/graph_export_top_10_percent.json" # File with the network topology, only used if topology = "from_file
 overwrite_balances = false # Overwrite balances in the topology file with random values with below config
 nodes_num = 0 # Has no affect if topology = "from_file"
 channels_num = 0 # Only effective for "random" topology
-capacity_distribution = "random"  # "half" (50-50), "random" (uniform random)
-sats_min = 3 # Minimum amount of satoshies in each side of the channel
-sats_max = 3 # Maximum amount of satoshies in each side of the channel
-saturation_probability = 0.2 # The probability of a channel being saturated,range [0,1]
+capacity_distribution = "random" # "half" (50-50), "random" (uniform random)
+sats_min = 0 # Minimum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
+sats_max = 0 # Maximum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
+saturation_probability = 0 # The probability of a channel being saturated,range [0,1]
 reopen_enabled = true # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
 count_initial_channels_as_reopens = true # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
 delay_enabled = false # Enable network delays
@@ -32,9 +32,9 @@ tx_hop_rtts = 0 # Number of RTTs for a transaction to proceed through a single h
 [agents]
 seed = 1677085608
 check_source_balance = false # Only choose source nodes with enough balance, set this to false only if reopening is enabled
-num_of_transactions = 100 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+num_of_transactions = 10000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 tx_rest = 0 # Delay between transactions for each agent in seconds
-tx_amount_min = 1 # Minimum amount of satoshies in each transaction
-tx_amount_max = 1 # Maximum amount of satoshies in each transaction
-tx_max_route_tries = 1 # Maximum number of attempts to find a route for a transaction
+tx_amount_min = 47619 # (10 dollars when btc=21k) # Minimum amount of satoshies in each transaction
+tx_amount_max = 47619 # (10 dollars when btc=21k) # Maximum amount of satoshies in each transaction
+tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
 routing_algorithm = "shortest_path" # ["shortest_path", "transparent"] # TODO: separate transparency and routing algorithm

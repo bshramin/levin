@@ -1,5 +1,7 @@
 from multiprocessing import Process
+from random import Random
 from time import sleep
+
 from .consts import (
     Status,
     TX_REST,
@@ -11,7 +13,6 @@ from .consts import (
     TX_MAX_ROUTE_TRIES,
     RoutingAlgorithms, CHECK_SOURCE_BALANCE, TX_MAX_QUERY_PER_TX_TRY,
 )
-from random import Random
 from .routers import ShortestPathRouter, TransparentRouter
 
 
@@ -55,18 +56,26 @@ class Agent:
         is_success = False
         error_edges = []
         routes_tried = 0
+        first_route = None
+        reopen_request = False
         while not is_success and routes_tried <= self.config[TX_MAX_ROUTE_TRIES]:
             route, error_edges = self.router.find_route(
                 self.network, src, dst, amount, error_edges
             )
-            if len(route) == 0:
+            if len(route) == 0 and routes_tried == 0:
                 break
             routes_tried += 1
-            is_success, error_edge = self.network.execute_transaction(route, amount)
+            if routes_tried == self.config[TX_MAX_ROUTE_TRIES] or len(route) == 0:
+                reopen_request = True
+                if routes_tried > 1:
+                    route = first_route
+            is_success, error_edge = self.network.execute_transaction(route, amount, reopen_request)
             if is_success:
                 self.log("transaction succeeded")
                 return
             error_edges.append(error_edge)
+            if routes_tried == 1:
+                first_route = route
         self.tx_routing_failed()
 
     def tx_routing_failed(self):

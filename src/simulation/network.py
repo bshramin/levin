@@ -102,12 +102,12 @@ class Network:
         )
         return hop_delay
 
-    def execute_transaction(self, route, amount):
+    def execute_transaction(self, route, amount, reopen_request=False):
         self.sc.record_tx_try()
         for i in range(len(route) - 1):
             edge = self.graph.get_edge_data(route[i], route[i + 1])
             if edge[AVAILABLE_SATS] < amount:
-                if self.config[REOPEN_ENABLED] and amount < edge[CAPACITY] / 2:
+                if reopen_request and self.config[REOPEN_ENABLED] and amount < edge[CAPACITY] / 2:
                     reverse_of_edge = self.graph.get_edge_data(route[i + 1], route[i])
                     while edge[LOCKED_SATS] > 0 or reverse_of_edge[LOCKED_SATS] > 0:
                         pass
