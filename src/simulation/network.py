@@ -307,5 +307,6 @@ class Network:
                 "capacities_median": statistics.median(capacities),
                 "num_of_channels": len(edges) / 2,  # NOTE: Each channel is represented twice in the directed graph
                 "num_of_nodes": len(self.graph.nodes()),
+                "average_shortest_path_length": nx.average_shortest_path_length(self.graph),
             }
         )
