@@ -308,5 +308,15 @@ class Network:
                 "num_of_channels": len(edges) / 2,  # NOTE: Each channel is represented twice in the directed graph
                 "num_of_nodes": len(self.graph.nodes()),
                 "average_shortest_path_length": nx.average_shortest_path_length(self.graph),
+                "average_min_cut": self.calculate_average_min_cut(),
             }
         )
+
+    def calculate_average_min_cut(self):
+        nodes = list(self.graph.nodes())
+        min_cuts = []
+        for i in range(len(nodes) - 1):
+            for j in range(i + 1, len(nodes)):
+                min_cut = list(nx.algorithms.connectivity.minimum_edge_cut(self.graph, nodes[i], nodes[j]))
+                min_cuts.append(len(min_cut))
+        return sum(min_cuts) / len(min_cuts)
