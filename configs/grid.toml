@@ -3,7 +3,7 @@ num_of_rounds = 1 # Number of runs of the simulation, statistics will be average
 num_of_agents = 1 # They work concurrently
 
 [logging]
-enabled = true # Enable logging
+enabled = false # Enable logging
 print_interval = 30 # Print statistics every print_interval seconds for each simulation round, print is enabled anyway even if logging is disabled
 
 [network]
@@ -30,6 +30,7 @@ tx_hop_rtts = 0 # Number of RTTs for a transaction to proceed through a single h
 seed = 1677085608
 check_source_balance = false # Only choose source nodes with enough balance, set this to false only if reopening is enabled
 num_of_transactions = 100000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+src_dst = "big_to_small" # ["fixed_pairs", "random", "big_to_small"] # TODO: add "fixed_pairs" option
 tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 1 # Minimum amount of satoshies in each transaction
 tx_amount_max = 1 # Maximum amount of satoshies in each transaction

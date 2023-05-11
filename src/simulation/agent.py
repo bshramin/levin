@@ -1,3 +1,4 @@
+import hashlib
 from multiprocessing import Process
 from random import Random
 from time import sleep
@@ -11,7 +12,7 @@ from .consts import (
     ROUTING_ALGORITHM,
     NUM_OF_TRANSACTIONS,
     TX_MAX_ROUTE_TRIES,
-    RoutingAlgorithms, CHECK_SOURCE_BALANCE, TX_MAX_QUERY_PER_TX_TRY,
+    RoutingAlgorithms, CHECK_SOURCE_BALANCE, TX_MAX_QUERY_PER_TX_TRY, SRC_DST, RANDOM, FIXED_PAIRS, BIG_TO_SMALL,
 )
 from .routers import ShortestPathRouter, TransparentRouter
 
@@ -87,6 +88,21 @@ class Agent:
         src = self.rand.choice(nodes)
         nodes.remove(src)
         dst = self.rand.choice(nodes)
+        sr_dst = self.config[SRC_DST]
+        if sr_dst == RANDOM:
+            pass
+        elif sr_dst == FIXED_PAIRS:
+            if src < dst:
+                src, dst = dst, src
+            combination = str(src) + str(dst)
+            combination_hash = int(hashlib.sha256(combination.encode('utf-8')).hexdigest(), base=16)
+            if combination_hash % 2 == 0:
+                src, dst = dst, src
+        elif sr_dst == BIG_TO_SMALL:
+            if src < dst:
+                src, dst = dst, src
+        else:
+            raise Exception("invalid src dst config: " + str(sr_dst))
         return src, dst
 
     def choose_amount(self):
