@@ -99,7 +99,9 @@ class Agent:
             if combination_hash % 2 == 0:
                 src, dst = dst, src
         elif sr_dst == BIG_TO_SMALL:
-            if src < dst:
+            src_hash = int(hashlib.sha256(str(src).encode('utf-8')).hexdigest(), base=16)
+            dst_hash = int(hashlib.sha256(str(dst).encode('utf-8')).hexdigest(), base=16)
+            if src_hash < dst_hash:
                 src, dst = dst, src
         else:
             raise Exception("invalid src dst config: " + str(sr_dst))
