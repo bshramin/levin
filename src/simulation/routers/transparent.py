@@ -1,4 +1,5 @@
 import networkx as nx
+
 from .router import Router
 from ..network import CAPACITY
 
@@ -32,6 +33,8 @@ class TransparentRouter(Router):
                     failed_edges.append([temp_route[i], temp_route[i + 1]])
                     route = []
 
+            # TODO: Sender and receiver are also aware of their balances, so we can use that information
+
             if len(route) == 0:
                 continue
 
@@ -42,7 +45,7 @@ class TransparentRouter(Router):
                 return [], failed_edges
 
             temp_route = route
-            edges = network.query_channels([[route[i], route[i + 1]] for i in range(len(route)-1)])
+            edges = network.query_channels([[route[i], route[i + 1]] for i in range(len(route) - 1)])
             for i in range(len(edges)):
                 if edges[i]["available_sats"] < amount:
                     graph.remove_edge(temp_route[i], temp_route[i + 1])

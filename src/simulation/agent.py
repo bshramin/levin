@@ -12,7 +12,8 @@ from .consts import (
     ROUTING_ALGORITHM,
     NUM_OF_TRANSACTIONS,
     TX_MAX_ROUTE_TRIES,
-    RoutingAlgorithms, CHECK_SOURCE_BALANCE, TX_MAX_QUERY_PER_TX_TRY, SRC_DST, RANDOM, FIXED_PAIRS, BIG_TO_SMALL,
+    RoutingAlgorithms, CHECK_SOURCE_BALANCE, TX_MAX_QUERY_PER_TX_TRY, SRC_DST, RANDOM, FIXED_PAIRS, BIG_TO_SMALL, ROLE,
+    DESPITE_ROLE, ROLE_SRC, ROLE_DST,
 )
 from .routers import ShortestPathRouter, TransparentRouter
 
@@ -84,28 +85,48 @@ class Agent:
         self.log("transaction failed - no route")
 
     def choose_src_and_dst(self):
-        nodes = list(self.network.graph.nodes())
-        src = self.rand.choice(nodes)
-        nodes.remove(src)
-        dst = self.rand.choice(nodes)
-        sr_dst = self.config[SRC_DST]
-        if sr_dst == RANDOM:
-            pass
-        elif sr_dst == FIXED_PAIRS:
+        nodes = list(self.network.graph.nodes(data=True))
+        src = None
+        dst = None
+        src_dst = self.config[SRC_DST]
+        if src_dst == RANDOM:
+            src = self.rand.choice(nodes)
+            nodes.remove(src)
+            dst = self.rand.choice(nodes)
+        elif src_dst == FIXED_PAIRS:
+            src = self.rand.choice(nodes)
+            nodes.remove(src)
+            dst = self.rand.choice(nodes)
             if src < dst:
                 src, dst = dst, src
             combination = str(src) + str(dst)
             combination_hash = int(hashlib.sha256(combination.encode('utf-8')).hexdigest(), base=16)
             if combination_hash % 2 == 0:
                 src, dst = dst, src
-        elif sr_dst == BIG_TO_SMALL:
+        elif src_dst == BIG_TO_SMALL:
+            src = self.rand.choice(nodes)
+            nodes.remove(src)
+            dst = self.rand.choice(nodes)
             src_hash = int(hashlib.sha256(str(src).encode('utf-8')).hexdigest(), base=16)
             dst_hash = int(hashlib.sha256(str(dst).encode('utf-8')).hexdigest(), base=16)
             if src_hash < dst_hash:
                 src, dst = dst, src
+        elif src_dst == ROLE:
+            while True:
+                src = self.rand.choice(nodes)
+                despite_role = self.rand.random() < self.config[DESPITE_ROLE]
+                if src[1].get(ROLE, ROLE_SRC) == ROLE_SRC or despite_role:  # Accepts the role if node has no role
+                    break
+            nodes.remove(src)
+            while True:
+                dst = self.rand.choice(nodes)
+                despite_role = self.rand.random() < self.config[DESPITE_ROLE]
+                if dst[1].get(ROLE, ROLE_DST) == ROLE_DST or despite_role:
+                    break
         else:
-            raise Exception("invalid src dst config: " + str(sr_dst))
-        return src, dst
+            raise Exception("invalid src dst config: " + str(src_dst))
+
+        return src[0], dst[0]  # NOTE: returns node ids without their attributes
 
     def choose_amount(self):
         return self.rand.randint(self.config[TX_AMOUNT_MIN], self.config[TX_AMOUNT_MAX])

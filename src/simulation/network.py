@@ -12,7 +12,7 @@ from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY,
     DELAY_ENABLED, \
     RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
     OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM, SATURATION_PROBABILITY, \
-    TOPOLOGY_2D_GRID
+    TOPOLOGY_2D_GRID, NODE_ATTRS_FILE
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -186,6 +186,20 @@ class Network:
 
         graph = self.build_directed_graph_with_channel_balances_from_undirected_graph(graph, sats_min, sats_max)
 
+        graph = self.assign_node_attributes(graph)
+
+        return graph
+
+    def assign_node_attributes(self, graph):
+        file_path = self.config.get(NODE_ATTRS_FILE)
+        if not file_path:
+            return graph
+        f = open(file_path, 'r', encoding="utf8")
+        json_data = json.load(f)
+        f.close()
+        for node in json_data:
+            for attr in json_data[node]:
+                graph.nodes[node][attr] = json_data[node][attr]
         return graph
 
     def build_directed_graph_with_channel_balances_from_undirected_graph(self, base_graph, sats_min, sats_max):
@@ -274,8 +288,11 @@ class Network:
 
         for channel in json_data['channels']:
             graph.add_edge(
-                channel['source'], channel['destination'], key=channel['short_channel_id'],
-                capacity=channel['satoshis'])
+                channel['source'],
+                channel['destination'],
+                key=channel['short_channel_id'],
+                capacity=channel['satoshis']
+            )
 
         biggest_island_size = 0
         islands = []
@@ -288,6 +305,7 @@ class Network:
             if len(island) < biggest_island_size:
                 graph.remove_nodes_from(island)
                 self.l.log(f"Removing island with nodes: {island}")
+
         return graph
 
     def dump(self):
@@ -307,8 +325,8 @@ class Network:
                 "capacities_median": statistics.median(capacities),
                 "num_of_channels": len(edges) / 2,  # NOTE: Each channel is represented twice in the directed graph
                 "num_of_nodes": len(self.graph.nodes()),
-                "average_shortest_path_length": nx.average_shortest_path_length(self.graph),
-                "average_min_cut": self.calculate_average_min_cut(),
+                # "average_shortest_path_length": nx.average_shortest_path_length(self.graph),
+                # "average_min_cut": self.calculate_average_min_cut(),
             }
         )
 
