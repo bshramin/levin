@@ -11,7 +11,7 @@ class TransparentRouter(Router):
     def __init__(self, tx_max_query_per_tx_try):
         self.tx_max_query_per_tx_try = tx_max_query_per_tx_try
 
-    def find_route(self, network, src, dst, amount, failed_edges=[]):
+    def find_route(self, network, src, dst, amount, failed_edges=set()):
         graph = network.graph.copy()
         for error_edge in failed_edges:
             graph.remove_edge(error_edge[0], error_edge[1])
@@ -30,7 +30,7 @@ class TransparentRouter(Router):
                 edge = graph.get_edge_data(temp_route[i], temp_route[i + 1])
                 if edge[CAPACITY] < amount:
                     graph.remove_edge(temp_route[i], temp_route[i + 1])
-                    failed_edges.append([temp_route[i], temp_route[i + 1]])
+                    failed_edges.add((temp_route[i], temp_route[i + 1]))
                     route = []
 
             # TODO: Sender and receiver are also aware of their balances, so we can use that information
@@ -49,7 +49,7 @@ class TransparentRouter(Router):
             for i in range(len(edges)):
                 if edges[i]["available_sats"] < amount:
                     graph.remove_edge(temp_route[i], temp_route[i + 1])
-                    failed_edges.append([temp_route[i], temp_route[i + 1]])
+                    failed_edges.add((temp_route[i], temp_route[i + 1]))
                     route = []
 
             if len(route) > 0:

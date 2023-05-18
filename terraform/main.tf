@@ -2,7 +2,7 @@ data "archive_file" "levin" {
   type        = "zip"
   source_dir  = "../"
   output_path = "./project_zips/levin-${timestamp()}.zip"
-  excludes = [
+  excludes    = [
     "terraform",
     "logs/*",
     "stats/*",
@@ -53,12 +53,13 @@ resource "azurerm_network_interface" "levin" {
 
 # Virtual machine
 resource "azurerm_virtual_machine" "levin" {
-  name                  = "levin-vm"
-  location              = "Canada Central"
-  resource_group_name   = "testing-tenancy"
-  network_interface_ids = [azurerm_network_interface.levin.id]
-  #  vm_size               = "Standard_F72s_v2" # Standard F72s v2 (72 vcpus, 144 GiB memory) For high performance computing and concurrency
-  vm_size                       = "Standard_DS11_v2" # Standard DS11 v2 (2 vcpus, 14 GiB memory) For low performance computing and single process tasks, a more powerful option can be Standard_DS12_v2
+  name                          = "levin-vm"
+  location                      = "Canada Central"
+  resource_group_name           = "testing-tenancy"
+  network_interface_ids         = [azurerm_network_interface.levin.id]
+  vm_size                       = "Standard_F72s_v2"
+  # Standard F72s v2 (72 vcpus, 144 GiB memory) For high performance computing and concurrency
+  #  vm_size                       = "Standard_DS11_v2" # Standard DS11 v2 (2 vcpus, 14 GiB memory) For low performance computing and single process tasks, a more powerful option can be Standard_DS12_v2
   delete_os_disk_on_termination = true
 
   storage_image_reference {

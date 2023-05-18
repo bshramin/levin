@@ -8,7 +8,7 @@ class ShortestPathRouter(Router):
     def __init__(self):
         pass
 
-    def find_route(self, network, src, dst, amount, failed_edges=[]):
+    def find_route(self, network, src, dst, amount, failed_edges=set()):
         graph = network.graph.copy()
         for error_edge in failed_edges:
             graph.remove_edge(error_edge[0], error_edge[1])
@@ -26,7 +26,7 @@ class ShortestPathRouter(Router):
                 edge = graph.get_edge_data(temp_route[i], temp_route[i + 1])
                 if edge[CAPACITY] < amount:
                     graph.remove_edge(temp_route[i], temp_route[i + 1])
-                    failed_edges.append([temp_route[i], temp_route[i + 1]])
+                    failed_edges.add((temp_route[i], temp_route[i + 1]))
                     route = []
 
             # TODO: Sender and receiver are also aware of their balances, so we can use that information

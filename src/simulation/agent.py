@@ -56,7 +56,7 @@ class Agent:
             amount = self.choose_amount()
         self.log(f"sending transaction from {str(src)} to {str(dst)} amount: {str(amount)}")
         is_success = False
-        error_edges = []
+        error_edges = set()
         routes_tried = 0
         first_route = None
         reopen_request = False
@@ -75,7 +75,7 @@ class Agent:
             if is_success:
                 self.log("transaction succeeded")
                 return
-            error_edges.append(error_edge)
+            error_edges.add(error_edge)
             if routes_tried == 1:
                 first_route = route
         self.tx_routing_failed()
