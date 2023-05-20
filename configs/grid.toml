@@ -34,4 +34,4 @@ tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 1 # Minimum amount of satoshies in each transaction
 tx_amount_max = 1 # Maximum amount of satoshies in each transaction
 tx_max_route_tries = 1 # Maximum number of attempts to find a route for a transaction
-routing_algorithm = "shortest_path" # ["shortest_path", "transparent"] # TODO: separate transparency and routing algorithm
+routing_algorithm = "dijkstra" # ["dijkstra", "transparent"] # TODO: separate transparency and routing algorithm

@@ -1,6 +1,6 @@
 [simulation]
 num_of_rounds = 1 # Number of runs of the simulation, statistics will be averaged over all runs, rounds run concurrently
-num_of_agents = 100 # They work concurrently
+num_of_agents = 1 # They work concurrently
 
 [logging]
 enabled = false # Enable logging
@@ -33,7 +33,7 @@ tx_hop_rtts = 3 # Number of RTTs for a transaction to proceed through a single h
 [agents]
 seed = 1677085608
 check_source_balance = true # Only choose source nodes with enough balance, set this to false only if reopening is enabled
-num_of_transactions = 10000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+num_of_transactions = 100 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 src_dst = "role" # ["fixed_pairs", "random", "big_to_small", "role"] # TODO: add "fixed_pairs" option
 despite_role = 0.1 # Probability of a node to act in a role other than its label
 tx_rest = 0 # Delay between transactions for each agent in seconds
@@ -41,4 +41,4 @@ tx_amount_min = 47619 # (10 dollars when btc=21k) # Minimum amount of satoshies 
 tx_amount_max = 47619 # (10 dollars when btc=21k) # Maximum amount of satoshies in each transaction
 tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
 tx_max_query_per_tx_try = 50 # Maximum number of queries to find each route for a transaction, only for transparent network, it will reset on every route found
-routing_algorithm = "transparent" # ["shortest_path", "transparent"] # TODO: separate transparency and routing algorithm
+routing_algorithm = "dijkstra" # ["dijkstra", "transparent"] # TODO: separate transparency and routing algorithm

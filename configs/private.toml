@@ -37,4 +37,4 @@ tx_amount_min = 358000 # Minimum amount of satoshies in each transaction
 tx_amount_max = 358000 # Maximum amount of satoshies in each transaction
 tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
 tx_max_query_per_tx_try = 50 # Maximum number of queries to find each route for a transaction, only for transparent network, it will reset on every route found
-routing_algorithm = "shortest_path" # ["shortest_path"]
+routing_algorithm = "dijkstra" # ["dijkstra"]

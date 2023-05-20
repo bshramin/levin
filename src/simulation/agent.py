@@ -37,7 +37,7 @@ class Agent:
 
     def set_router(self):
         routing_algorithm = self.config[ROUTING_ALGORITHM]
-        if routing_algorithm == RoutingAlgorithms.SHORTEST_PATH.value:
+        if routing_algorithm == RoutingAlgorithms.DIJKSTRA.value:
             self.router = ShortestPathRouter()
         elif routing_algorithm == RoutingAlgorithms.TRANSPARENT.value:
             self.router = TransparentRouter(self.config[TX_MAX_QUERY_PER_TX_TRY])

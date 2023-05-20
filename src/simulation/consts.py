@@ -85,5 +85,5 @@ TX_MAX_QUERY_PER_TX_TRY = "tx_max_query_per_tx_try"
 
 
 class RoutingAlgorithms(Enum):
-    SHORTEST_PATH = "shortest_path"
+    DIJKSTRA = "dijkstra"
     TRANSPARENT = "transparent"
