@@ -1,7 +1,7 @@
 import networkx as nx
 
 from .router import Router
-from ..network import CAPACITY
+from ..network import CAPACITY, AVAILABLE_SATS
 
 
 class ShortestPathRouter(Router):
@@ -29,7 +29,19 @@ class ShortestPathRouter(Router):
                     failed_edges.add((temp_route[i], temp_route[i + 1]))
                     route = []
 
-            # TODO: Sender and receiver are also aware of their balances, so we can use that information
+            # NOTE: Sender and receiver are also aware of their balances, so we can use that information
+            if len(route) > 0:
+                flag = False
+                if graph.get_edge_data(route[0], route[1])[AVAILABLE_SATS] < amount:
+                    graph.remove_edge(route[0], route[1])
+                    failed_edges.add((route[0], route[1]))
+                    flag = True
+                if len(route) > 2 and graph.get_edge_data(route[-2], route[-1])[AVAILABLE_SATS] < amount:
+                    graph.remove_edge(route[-2], route[-1])
+                    failed_edges.add((route[-2], route[-1]))
+                    flag = True
+                if flag:
+                    route = []
 
             if len(route) > 0:
                 return route, failed_edges

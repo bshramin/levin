@@ -1,7 +1,7 @@
 import networkx as nx
 
 from .router import Router
-from ..network import CAPACITY
+from ..network import CAPACITY, AVAILABLE_SATS
 
 
 class TransparentRouter(Router):
@@ -33,24 +33,38 @@ class TransparentRouter(Router):
                     failed_edges.add((temp_route[i], temp_route[i + 1]))
                     route = []
 
-            # TODO: Sender and receiver are also aware of their balances, so we can use that information
+            # NOTE: Sender and receiver are also aware of their balances, so we can use that information
+            if len(route) > 0:
+                flag = False
+                if graph.get_edge_data(route[0], route[1])[AVAILABLE_SATS] < amount:
+                    graph.remove_edge(route[0], route[1])
+                    failed_edges.add((route[0], route[1]))
+                    flag = True
+                if len(route) > 2 and graph.get_edge_data(route[-2], route[-1])[AVAILABLE_SATS] < amount:
+                    graph.remove_edge(route[-2], route[-1])
+                    failed_edges.add((route[-2], route[-1]))
+                    flag = True
+                if flag:
+                    route = []
 
             if len(route) == 0:
                 continue
 
             # TODO: we can only query the channels that have a probability of success less than a certain percentage
 
-            num_of_queries += len(route)
+            num_of_queries += int((len(route) - 2) / 2)
             if num_of_queries >= self.tx_max_query_per_tx_try:
                 return [], failed_edges
 
             temp_route = route
-            edges = network.query_channels([[route[i], route[i + 1]] for i in range(len(route) - 1)])
-            for i in range(len(edges)):
-                if edges[i]["available_sats"] < amount:
-                    graph.remove_edge(temp_route[i], temp_route[i + 1])
-                    failed_edges.add((temp_route[i], temp_route[i + 1]))
-                    route = []
+
+            if len(temp_route) > 3:  # No need to query the first and last edges
+                edges = network.query_channels([[route[i], route[i + 1]] for i in range(1, len(route) - 2)])
+                for i in range(len(edges)):
+                    if edges[i]["available_sats"] < amount:
+                        graph.remove_edge(temp_route[i], temp_route[i + 1])
+                        failed_edges.add((temp_route[i], temp_route[i + 1]))
+                        route = []
 
             if len(route) > 0:
                 return route, failed_edges
