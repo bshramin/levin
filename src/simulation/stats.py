@@ -43,7 +43,7 @@ class StatCollector:
                 to_print = deepcopy(self.stat_data)
                 del to_print[StatType.CONFIG.value]
                 self.stdout_q.put(
-                    f"=========================================\n"
+                    f"========================================= {datetime.now()}\n"
                     f"Stats for {self.name}\n"
                     f"{str(to_print)}\n"
                 )
