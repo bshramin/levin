@@ -1,0 +1,44 @@
+[simulation]
+num_of_rounds = 1 # Number of runs of the simulation, statistics will be averaged over all runs, rounds run concurrently
+num_of_agents = 100 # They work concurrently
+
+[logging]
+enabled = false # Enable logging
+print_interval = 30 # Print statistics every print_interval seconds for each simulation round, print is enabled anyway even if logging is disabled
+
+[network]
+# You can use an exact number to reproduce the psoudo random results
+seed = 1677085608
+# All topologies will be connected with no self-loops
+# ["random", "star", "complete", "path", "balanced_tree", "from_file"]
+# IDEA: add reading network topology from a file
+topology = "random"
+topology_file = "" # File with the network topology, only used if topology = "from_file
+node_attrs_file = "" # File with node attributes, only used if topology = "from_file, can be empty
+overwrite_balances = true # Overwrite balances in the topology file with random values with below config
+nodes_num = 14776 # Has no affect if topology = "from_file"
+channels_num = 69117 # Only effective for "random" topology
+capacity_distribution = "random" # "half" (50-50), "random" (uniform random)
+sats_min = 2000000 # Minimum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
+sats_max = 2000000 # Maximum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
+saturation_probability = 0 # The probability of a channel being saturated,range [0,1]
+reopen_enabled = false # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
+count_initial_channels_as_reopens = false # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
+delay_enabled = true # Enable network delays
+rtt_delay = 50 # Delay in milliseconds for each RTT
+delay_randomness_threshold = 0 # Delay randomness threshold, 0.3 means that the delay will be between 0.7 * rtt_delay and 1.3 * rtt_delay
+query_rtts = 1 # Number of RTTs for a query
+tx_hop_rtts = 3 # Number of RTTs for a transaction to proceed through a single hop
+
+[agents]
+seed = 1677085608
+check_source_balance = true # Only choose source nodes with enough balance, set this to false only if reopening is enabled
+num_of_transactions = 10000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+src_dst = "role" # ["fixed_pairs", "random", "big_to_small", "role"] # TODO: add "fixed_pairs" option
+despite_role = 0.1 # Probability of a node to act in a role other than its label
+tx_rest = 0 # Delay between transactions for each agent in seconds
+tx_amount_min = 82000 # (20 dollars when btc=20.4k) # Minimum amount of satoshies in each transaction
+tx_amount_max = 82000 # (20 dollars when btc=20.4k) # Maximum amount of satoshies in each transaction
+tx_max_route_tries = 10 # Maximum number of attempts to find a route for a transaction
+tx_max_query_per_tx_try = 50 # Maximum number of queries to find each route for a transaction, only for transparent network, it will reset on every route found
+routing_algorithm = "transparent" # ["dijkstra", "transparent"] # TODO: separate transparency and routing algorithm
