@@ -12,7 +12,7 @@ from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY,
     DELAY_ENABLED, \
     RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
     OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM, SATURATION_PROBABILITY, \
-    TOPOLOGY_2D_GRID, NODE_ATTRS_FILE, ROLE, ROLE_ROUTER, ROLE_SRC, ROLE_DST
+    TOPOLOGY_2D_GRID, NODE_ATTRS_FILE, ROLE, ROLE_ROUTER, ROLE_SRC, ROLE_DST, PARTICIPATION
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -206,6 +206,11 @@ class Network:
             for node in graph.nodes():
                 role = self.rand.choice([ROLE_ROUTER,ROLE_SRC,ROLE_DST])
                 graph.nodes[node][ROLE] = role
+                if self.rand.random() < 0.8:
+                    graph.nodes[node][PARTICIPATION] = 0.2
+                else:
+                    graph.nodes[node][PARTICIPATION] = 0.8
+
         # TODO: add more topologies
         return graph
 

@@ -85,6 +85,7 @@ class Agent:
         self.log("transaction failed - no route")
 
     def choose_src_and_dst(self):
+        # TODO: take into account the participation degree
         nodes = list(self.network.graph.nodes(data=True))
         src = None
         dst = None

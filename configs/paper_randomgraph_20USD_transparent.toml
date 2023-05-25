@@ -35,6 +35,7 @@ seed = 1677085608
 check_source_balance = true # Only choose source nodes with enough balance, set this to false only if reopening is enabled
 num_of_transactions = 10000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 src_dst = "role" # ["fixed_pairs", "random", "big_to_small", "role"] # TODO: add "fixed_pairs" option
+participaion = false # Enable participation degree, taking into account the degree of activity of each node
 despite_role = 0.1 # Probability of a node to act in a role other than its label
 tx_rest = 0 # Delay between transactions for each agent in seconds
 tx_amount_min = 82000 # (20 dollars when btc=20.4k) # Minimum amount of satoshies in each transaction
