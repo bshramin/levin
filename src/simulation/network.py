@@ -12,7 +12,7 @@ from .consts import SEED, NODES_NUM, CHANNELS_NUM, SATS_MIN, SATS_MAX, TOPOLOGY,
     DELAY_ENABLED, \
     RTT_DELAY, TX_HOP_RTTS, QUERY_RTTS, DELAY_RANDOMNESS_THRESHOLD, TOPOLOGY_FILE, TOPOLOGY_FROM_FILE, \
     OVERWRITE_BALANCES, CAPACITY_DISTRIBUTION, DISTRIBUTION_HALF, DISTRIBUTION_RANDOM, SATURATION_PROBABILITY, \
-    TOPOLOGY_2D_GRID, NODE_ATTRS_FILE
+    TOPOLOGY_2D_GRID, NODE_ATTRS_FILE, ROLE, ROLE_ROUTER, ROLE_SRC, ROLE_DST
 
 CAPACITY = "capacity"
 LOCKED_SATS = "locked_sats"
@@ -186,20 +186,27 @@ class Network:
 
         graph = self.build_directed_graph_with_channel_balances_from_undirected_graph(graph, sats_min, sats_max)
 
-        graph = self.assign_node_attributes(graph)
+        graph = self.assign_node_attributes(graph, topology)
 
         return graph
 
-    def assign_node_attributes(self, graph):
-        file_path = self.config.get(NODE_ATTRS_FILE)
-        if not file_path:
-            return graph
-        f = open(file_path, 'r', encoding="utf8")
-        json_data = json.load(f)
-        f.close()
-        for node in json_data:
-            for attr in json_data[node]:
-                graph.nodes[node][attr] = json_data[node][attr]
+    def assign_node_attributes(self, graph, topology):
+        if topology == TOPOLOGY_FROM_FILE:
+            file_path = self.config.get(NODE_ATTRS_FILE)
+            if not file_path:
+                self.l.log("NODE_ATTRS_FILE not specified in config file for this graph.")
+                return graph
+            f = open(file_path, 'r', encoding="utf8")
+            json_data = json.load(f)
+            f.close()
+            for node in json_data:
+                for attr in json_data[node]:
+                    graph.nodes[node][attr] = json_data[node][attr]
+        elif topology == TOPOLOGY_RANDOM:
+            for node in graph.nodes():
+                role = self.rand.choice([ROLE_ROUTER,ROLE_SRC,ROLE_DST])
+                graph.nodes[node][ROLE] = role
+        # TODO: add more topologies
         return graph
 
     def build_directed_graph_with_channel_balances_from_undirected_graph(self, base_graph, sats_min, sats_max):
