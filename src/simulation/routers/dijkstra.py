@@ -15,7 +15,7 @@ class ShortestPathRouter(Router):
 
         while True:
             try:
-                route = nx.shortest_path(graph, src, dst)
+                route = nx.shortest_path(graph, src, dst)  # route includes src and dst [src, ..., dst]
             except nx.NetworkXNoPath:
                 return [], failed_edges
             if len(route) == 0:

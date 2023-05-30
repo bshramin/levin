@@ -19,7 +19,7 @@ class TransparentRouter(Router):
 
         while True:
             try:
-                route = nx.shortest_path(graph, src, dst)
+                route = nx.shortest_path(graph, src, dst)  # route includes src and dst [src, ..., dst]
             except nx.NetworkXNoPath:
                 return [], failed_edges
             if len(route) == 0:
@@ -62,8 +62,8 @@ class TransparentRouter(Router):
                 edges = network.query_channels([[route[i], route[i + 1]] for i in range(1, len(route) - 2)])
                 for i in range(len(edges)):
                     if edges[i]["available_sats"] < amount:
-                        graph.remove_edge(temp_route[i], temp_route[i + 1])
-                        failed_edges.add((temp_route[i], temp_route[i + 1]))
+                        graph.remove_edge(temp_route[i + 1], temp_route[i + 2])
+                        failed_edges.add((temp_route[i + 1], temp_route[i + 2]))
                         route = []
 
             if len(route) > 0:
