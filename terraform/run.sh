@@ -1,5 +1,5 @@
 # Prepare the environment and variables
-CONFIG_FILES_TO_RUN="from_file"
+CONFIG_FILES_TO_RUN="paper_realgraph_20USD_dijkstra paper_realgraph_20USD_transparent paper_randomgraph_20USD_dijkstra paper_randomgraph_20USD_transparent"
 SSH_PUBLIC_KEY="$HOME/.ssh/id_rsa.pub"
 SSH_PRIVATE_KEY="$HOME/.ssh/id_rsa"
 VARIABLES="ssh_pub_key=$(cat "$SSH_PUBLIC_KEY")"

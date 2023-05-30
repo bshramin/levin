@@ -15,13 +15,13 @@ seed = 1677085608
 topology = "from_file"
 topology_file = "topologies/listchannels20230114.json" # File with the network topology, only used if topology = "from_file
 node_attrs_file = "topologies/node_attrs/listchannels20230114.json" # File with node attributes, only used if topology = "from_file, can be empty
-overwrite_balances = false # Overwrite balances in the topology file with random values with below config
+overwrite_balances = true # Overwrite balances in the topology file with random values with below config
 nodes_num = 0 # Has no affect if topology = "from_file"
 channels_num = 0 # Only effective for "random" topology
 capacity_distribution = "random" # "half" (50-50), "random" (uniform random)
-sats_min = 0 # Minimum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
-sats_max = 0 # Maximum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
-saturation_probability = 0 # The probability of a channel being saturated,range [0,1]
+sats_min = 1000000 # Minimum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
+sats_max = 1000000 # Maximum amount of satoshies in each side of the channel, not applicable when topology="from_file" and overwrite_balances=false
+saturation_probability = 1 # The probability of a channel being saturated,range [0,1]
 reopen_enabled = false # Reopen closed channels 50-50, # TODO: Reopens channels of the first route tried, maybe not the best idea, but it is kinda similar to reality
 count_initial_channels_as_reopens = false # Count initial channels as reopens, set this to false if you don't want to count initial channels as reopens
 delay_enabled = true # Enable network delays
@@ -33,7 +33,7 @@ tx_hop_rtts = 3 # Number of RTTs for a transaction to proceed through a single h
 [agents]
 seed = 1677085608
 check_source_balance = true # Only choose source nodes with enough balance, set this to false only if reopening is enabled
-num_of_transactions = 10000 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
+num_of_transactions = 100 # Total number of transactions a single agent will make. will be treated as max_num_of_transactions if method is "until_failure".
 src_dst = "role" # ["fixed_pairs", "random", "big_to_small", "role"] # TODO: add "fixed_pairs" option
 participaion = false # Enable participation degree, taking into account the degree of activity of each node
 despite_role = 0.1 # Probability of a node to act in a role other than its label
