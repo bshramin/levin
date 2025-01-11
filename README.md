@@ -1,53 +1,82 @@
-
 # Levin
-Levin is a Lightning network simulator that can be used to evaluate
-the effect of changes to how the network is constructed, how payments are routed and the actions of nodes.
+Levin is a Lightning network simulator for evaluating network construction, payment routing, and node behavior in Lightning Networks.
 
-## Running Levin
-```shell
+## Features
+- Simulate Lightning Network topology and behavior
+- Evaluate different routing strategies
+- Test node actions and their impact
+- Support for concurrent transactions
+- Configurable network parameters
+- Data persistence and analysis
+
+## Getting Started
+
+### Prerequisites
+- Python 3.x
+- Pipenv (for dependency management)
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/levin.git
+cd levin
+
+# Install dependencies
+pipenv install
+```
+
+### Running Levin
+```bash
+# Activate virtual environment
+pipenv shell
+
+# Run simulation with templates
 python3 src/main.py [TEMPLATE_NAME_1] [TEMPLATE_NAME_2] [TEMPLATE_NAME_3] ...
 ```
 
-### Using Docker
-[TODO]
+### Deployment Options
 
-### Running on Microsoft Azure with Terraform
-This project is capable of automatically deploying Levin to Microsoft Azure using Terraform.
-It will then upload the code to the VM and run it. After the simulation is completed it will download the results.
-And finally it will destroy the VM and all the resources created on Azure.
+#### Using Docker
+[Coming Soon]
 
-First you need to write the name of the configuration files you want to run in `terraform/run.sh` for key `CONFIG_FILES_TO_RUN`, it's a space separated list. Then you can run:
-```shell
+#### Microsoft Azure Deployment
+Levin can be automatically deployed to Microsoft Azure using Terraform. The deployment process:
+1. Creates necessary Azure resources
+2. Uploads and executes the simulation
+3. Downloads results
+4. Automatically cleans up resources
+
+To deploy:
+1. Configure template files in `terraform/run.sh` using `CONFIG_FILES_TO_RUN` (space-separated list)
+2. Run the deployment:
+```bash
 bash clean.sh
 cd terraform
 bash run.sh
 ```
 
+## Development Status
 
-## Development
-Use Pipenv to manage the virtual environment and dependencies.
+### Compression Features
+- ✅ Channel re-opening
+- ✅ Re-opening count tracking
+- ✅ Multiple run averaging
+- ✅ Simplified debugging numbers
+- ✅ Initial channel opening tracking
+- ✅ Network data file input
 
-### Activate the virtual environment
-```bash
-pipenv shell
-```
+### Transparency Features
+- ✅ Concurrent agent execution
+- ✅ Hop-based transaction delays
+- ✅ Query limits per route
+- ✅ Random delay variation
+- ✅ Parallel path queries
+- ✅ Partial path node querying
+- ⬜ Multipath payment support
 
+## Contributing
+[Add contribution guidelines if applicable]
 
-
-## Compression TODO:
-- [X] Add re-opening
-- [X] Add count re-openings till number of transactions
-- [X] Run multiple times and average
-- [X] Decrease numbers to make debugging simpler
-- [X] count initial channel openning as reopenning
-- [X] Read network data from file
-
-
-## Transparent TODO:
-- [X] Run concurrent agents
-- [X] add delay to sending transactions on for each hop
-- [X] Limit the number of queries per route
-- [ ] Add multipath payment
-- [X] Add randomness to the delays
-- [X] Queries of a path get executed in parallel
-- [X] Only query half of the nodes in the path
+## License
+MIT License
+Copyright (c) 2024 Levin
