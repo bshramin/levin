@@ -1,5 +1,5 @@
 # Levin
-Levin is a Lightning network simulator for evaluating network construction, payment routing, and node behavior in Lightning Networks.
+Levin is a Lightning Network simulator for evaluating network construction, payment routing, and node behavior in the Lightning Network.
 
 ## Features
 - Simulate Lightning Network topology and behavior
@@ -73,9 +73,6 @@ bash run.sh
 - ✅ Parallel path queries
 - ✅ Partial path node querying
 - ⬜ Multipath payment support
-
-## Contributing
-[Add contribution guidelines if applicable]
 
 ## License
 MIT License
